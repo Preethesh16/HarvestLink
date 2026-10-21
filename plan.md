@@ -228,3 +228,21 @@ Change log:
 - Implemented original SVG produce illustrations and a responsive Three.js farm with greenhouse, orchard, tractor and crop beds; reduced-motion and WebGL fallback retained.
 - Rebuilt farmer and buyer presentation with forest/cream surfaces, editorial typography and functional journey navigation. Production build and all four isolated Playwright journeys pass; refreshing recorded walkthrough.
 - Refreshed desktop/mobile screenshots and recorded the complete redesigned workflow without browser exceptions. Updated README and verification notes; prepared the redesign for publication.
+
+## Accessible entrance, identity and native-language assistance
+- [x] A1 — Cinematic agricultural landing, separate sign-in and profile onboarding for four demo accounts.
+- [x] A2 — Server-validated sessions and distinct minimal farmer/restaurant workspaces.
+- [x] A3 — Indian-language interface and Inception-derived honeybee with native-language text and Sarvam speech.
+- [x] A4 — Authentication, translation, assistant and workflow regression tests; refreshed documentation.
+
+Change log:
+- Began requested entrance and accessibility expansion. Reuse Inception mascot geometry/interaction; preserve final farmer approval. Keep voice credentials in ignored server configuration. Demo accounts are explicitly labelled; no production identity claims.
+
+- Added four cookie-backed demo identities, first-login profile onboarding and server enforcement against actor impersonation. Farmer and buyer screens now use separate green/blue minimal treatments.
+- Adapted Inception’s original honeybee model into Madhu; added native-language text and Sarvam speech. Verified an actual Kannada audio response. Added cached translation for English plus ten Indian languages, with explicit English fallback on service failure.
+- Initial browser regression caught a development-proxy origin mismatch; corrected the explicit local origin allowlist and rerunning workflows.
+
+- Bundled 294 standard interface phrases in each of ten Indian-language catalogs; corrected key Kannada navigation terms and retained dynamic translation fallback. Added voice cancellation on close/language switch and keyboard Escape support.
+- Added identity, onboarding, language and assistant tests. Actual Kannada answer and speech succeeded; full regional language quality review remains outside this demo verification.
+
+- Completed 19 backend and 6 browser tests, production build and static checks. Recorded the authenticated end-to-end workflow without browser errors. Refreshed entrance, sign-in, assistant and Kannada screenshots; documented four demo credentials and voice setup.

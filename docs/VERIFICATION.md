@@ -4,8 +4,8 @@ Executed locally on 21 October 2026.
 
 | Check | Result |
 | --- | --- |
-| Backend pytest suite | 15 passed |
-| Playwright browser suite | 4 passed |
+| Backend pytest suite | 19 passed |
+| Playwright browser suite | 6 passed |
 | TypeScript + Vite production build | Passed; lazy Three.js chunk size advisory |
 | Ruff static checks | Passed |
 | Python compile check | Passed |
@@ -24,3 +24,13 @@ The test suite is evidence for the covered prototype paths, not a guarantee that
 ## Agricultural redesign regression
 
 The production build and all four Playwright journeys passed again after the visual redesign. Tests ran against an isolated SQLite database on ports 8001/5174 with local policy negotiation, preserving the running OpenAI-enabled demo and avoiding paid negotiation calls. Desktop and 390px mobile captures were visually inspected; screenshots and walkthrough were refreshed. The Three.js farm remains lazy-loaded with reduced-motion and WebGL fallback support.
+
+## Entrance and native-language assistance
+
+- Four explicit demo accounts now use password verification, HttpOnly SameSite cookies, 12-hour server-side sessions and workspace enforcement. Login attempts are throttled after repeated failures; logout revokes the session. These remain public hackathon identities, not production customer accounts.
+- Backend identity tests cover missing login, invalid password, actor-header impersonation, farmer-only actions, onboarding validation, logout and cross-origin rejection.
+- Inception's user-owned CareMascot geometry was adapted into Madhu. The helper uses scoped workspace data for text answers and Sarvam Bulbul v3 for spoken replies. Actual Kannada text generation and audio synthesis were verified; all ten regional voices have not individually been listened to.
+- English plus Hindi, Kannada, Tamil, Telugu, Malayalam, Marathi, Gujarati, Bengali, Punjabi and Odia are offered. Standard labels are bundled; dynamic text uses cached server translation with explicit English fallback. Machine-generated translations need native-speaker review before production.
+- Source reference: https://docs.sarvam.ai/api-reference/text-to-speech/convert. Cinematic entrance inspiration: https://higgsfield.ai/; all farm geometry is local/original rather than copied media.
+
+Final entrance verification: 19 backend tests, 6 Playwright tests, TypeScript/Vite build and Ruff pass. Updated workflow recording completed without browser exceptions after introducing authenticated participants. Native-language mobile layout was visually inspected with no horizontal overflow.

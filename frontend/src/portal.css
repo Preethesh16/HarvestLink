@@ -1,0 +1,300 @@
+.portal-tools {
+  position: fixed;
+  right: 26px;
+  top: 20px;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.portal-tools:not(.signed-in) {
+  right: 190px;
+  color: #f4f1e7;
+}
+.portal-tools button,
+.language-picker select {
+  font: inherit;
+  font-size: 13px;
+  border: 1px solid #b8c8ac;
+  border-radius: 9px;
+  padding: 9px 12px;
+  background: #fffdf5;
+  color: #284637;
+}
+.language-picker label {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.language-picker small {
+  position: absolute;
+  top: 43px;
+  right: 0;
+  background: #fffdf5;
+  color: #405541;
+  padding: 6px 10px;
+  border-radius: 6px;
+  max-width: 230px;
+}
+.portal-loading {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  background: #f8f7ef;
+}
+.signed-in {
+  top: 18px;
+}
+.signed-in + .app .topbar {
+  padding-right: 300px;
+}
+.signed-in + .app .demo-label {
+  display: none;
+}
+.app .content {
+  padding-bottom: 130px;
+}
+.farmer-workspace .hero {
+  height: auto;
+  min-height: 300px;
+}
+.farmer-workspace .farm-scene,
+.farmer-workspace .farm-stat,
+.farmer-workspace .hero-stamp {
+  display: none;
+}
+.farmer-workspace .hero-copy {
+  width: 100%;
+  max-width: 800px;
+}
+.farmer-workspace .hero h1 {
+  font-size: 42px;
+}
+.farmer-workspace .harvest-journey,
+.farmer-workspace .sidebar-note {
+  display: none;
+}
+.farmer-workspace .lots-grid {
+  grid-template-columns: 1fr;
+}
+.farmer-workspace .metrics {
+  gap: 12px;
+}
+.restaurant-workspace .sidebar {
+  background: #182b35;
+}
+.restaurant-workspace .sidebar nav button.active {
+  background: #d5e8eb;
+  color: #193844;
+}
+.restaurant-workspace .hero {
+  background: #e6eff0;
+  color: #183b46;
+  height: auto;
+  min-height: 280px;
+}
+.restaurant-workspace .hero h1,
+.restaurant-workspace .hero h1 em {
+  color: #1c424d;
+}
+.restaurant-workspace .hero p {
+  color: #405d65;
+}
+.restaurant-workspace .farm-scene,
+.restaurant-workspace .farm-stat,
+.restaurant-workspace .hero-stamp,
+.restaurant-workspace .harvest-journey {
+  display: none;
+}
+.restaurant-workspace .hero-copy {
+  width: 100%;
+  max-width: 800px;
+}
+.restaurant-workspace .hero h1 {
+  font-size: 42px;
+}
+.restaurant-workspace .primary,
+.restaurant-workspace .button:not(.secondary) {
+  background: #254d5a;
+  color: white;
+}
+.bee-guide {
+  position: fixed;
+  bottom: 18px;
+  right: 24px;
+  z-index: 70;
+}
+.bee-toggle {
+  border: 0;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #214b38;
+  font: 600 13px inherit;
+  cursor: pointer;
+}
+.bee-toggle > div {
+  width: 110px;
+  height: 110px;
+}
+.bee-toggle > span {
+  background: #f8d867;
+  padding: 9px 18px;
+  border-radius: 24px;
+  box-shadow: 0 4px 20px #182c2520;
+}
+.bee-panel {
+  position: absolute;
+  bottom: 145px;
+  right: 0;
+  width: 360px;
+  max-height: 65vh;
+  overflow: auto;
+  background: #fffef8;
+  border: 1px solid #e4ddc8;
+  border-radius: 22px;
+  padding: 22px;
+  box-shadow: 0 14px 60px #18352730;
+}
+.bee-panel header {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+.bee-panel h2 {
+  font-size: 22px;
+  margin: 6px 0;
+}
+.bee-panel small {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: #657b53;
+}
+.bee-panel p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.bee-panel button {
+  cursor: pointer;
+  background: #eef2e6;
+  border: 0;
+  border-radius: 8px;
+  padding: 9px;
+  color: #294a35;
+  font: inherit;
+}
+.bee-suggestions {
+  display: grid;
+  gap: 7px;
+  margin: 15px 0;
+}
+.bee-suggestions button {
+  text-align: left;
+  font-size: 13px;
+}
+.bee-answer {
+  background: #f3f3df;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.bee-answer button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+}
+.bee-panel form {
+  display: flex;
+  gap: 8px;
+}
+.bee-panel input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid #d6ddcd;
+  border-radius: 9px;
+  padding: 12px;
+  font: inherit;
+}
+.bee-panel button:disabled {
+  opacity: 0.5;
+}
+.language-picker select {
+  max-width: 135px;
+}
+.portal-tools ~ .welcome .welcome-header-right > span {
+  display: none;
+}
+@media (max-width: 800px) {
+  .portal-tools:not(.signed-in) {
+    right: 105px;
+    top: 23px;
+  }
+  .portal-tools .language-picker label > span {
+    display: none;
+  }
+  .portal-tools .language-picker select {
+    max-width: 105px;
+    padding: 7px;
+  }
+  .signed-in {
+    position: relative;
+    top: auto;
+    right: auto;
+    padding: 10px 16px;
+    justify-content: flex-end;
+    background: #f5f6ed;
+  }
+  .signed-in + .app .topbar {
+    padding-right: 16px;
+  }
+  .bee-guide {
+    right: 12px;
+    bottom: 12px;
+  }
+  .bee-toggle > div {
+    width: 85px;
+    height: 85px;
+  }
+  .bee-panel {
+    bottom: 120px;
+    width: min(360px, calc(100vw - 24px));
+  }
+  .farmer-workspace .hero,
+  .restaurant-workspace .hero {
+    min-height: 320px;
+    height: auto;
+  }
+  .farmer-workspace .hero h1,
+  .restaurant-workspace .hero h1 {
+    font-size: 34px;
+  }
+  .farmer-workspace .hero-copy,
+  .restaurant-workspace .hero-copy {
+    padding: 25px;
+  }
+  .app .content {
+    padding-bottom: 140px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bee-guide * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.bee-toggle:focus-visible {
+  outline: 3px solid #b29a3d;
+  border-radius: 20px;
+  outline-offset: 4px;
+}
+.bee-panel small {
+  font-size: 11px;
+}
+.farmer-workspace .role-select strong,
+.restaurant-workspace .role-select strong {
+  font-size: 14px;
+  white-space: normal;
+}

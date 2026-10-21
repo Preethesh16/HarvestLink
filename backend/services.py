@@ -17,7 +17,7 @@ def modes():
         "negotiation": os.getenv("NEGOTIATION_MODE", "local"),
         "forecast": os.getenv("FORECAST_MODE", "baseline"),
         "payments": "simulation",
-        "identity": "local role-switching demo — not production authentication",
+        "identity": "four session-scoped demo accounts — not production identity verification",
     }
 
 

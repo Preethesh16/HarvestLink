@@ -1,93 +1,162 @@
-import {test,expect} from '@playwright/test';
-const API=process.env.TEST_API_URL||'http://127.0.0.1:8000';
-test.beforeEach(async({request})=>{await request.post(API+'/api/reset',{headers:{'X-Actor':'farmer'}})});
-test('farmer listing and three-buyer trade through settlement',async({page})=>{
- const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/');
- await expect(page.getByRole('heading',{name:'A better harvest.'})).toBeVisible();
- await page.getByRole('button',{name:'List a harvest',exact:true}).click();
- await page.getByLabel('Crop',{exact:true}).fill('Cucumber');
- await page.getByLabel('Quantity (kg)',{exact:true}).fill('25');
- await page.getByRole('button',{name:'Publish harvest'}).click();
- await expect(page.getByRole('status')).toContainText('Saved');
- await page.getByRole('button',{name:'Negotiations',exact:true}).click();
- await page.getByRole('button',{name:'Run negotiation'}).click();
- await expect(page.locator('.offer-card')).toHaveCount(3);
- await page.screenshot({path:'../docs/images/negotiation.png',fullPage:true});
- await page.getByRole('button',{name:'Choose this offer'}).first().click();
- await page.getByRole('button',{name:'Orders',exact:true}).click();
- await expect(page.locator('.order').getByText('awaiting buyer',{exact:true})).toBeVisible();
- await page.getByLabel('Switch demo participant').selectOption('r1');
- await expect(page.getByRole('heading',{name:'A well-stocked kitchen.'})).toBeVisible();
- await page.getByRole('button',{name:'Orders',exact:true}).click();
- await page.getByRole('button',{name:'Confirm agreement'}).click();
- await page.getByRole('button',{name:'Fund simulated payment'}).click();
- await page.getByLabel('Switch demo participant').selectOption('farmer');
- await page.getByRole('button',{name:'Orders',exact:true}).click();
- await page.getByRole('button',{name:'Record pickup'}).click();
- await page.getByLabel('Switch demo participant').selectOption('r1');
- await page.getByRole('button',{name:'Orders',exact:true}).click();
- await page.getByRole('button',{name:'Confirm receipt'}).click();
- await page.getByLabel('Switch demo participant').selectOption('farmer');
- await page.getByRole('button',{name:'Orders',exact:true}).click();
- await page.getByRole('button',{name:'Release simulated funds'}).click();
- await expect(page.locator('.order .badge')).toHaveText('settled');
- await page.screenshot({path:'../docs/images/order-settled.png',fullPage:true});
- expect(errors).toEqual([]);
+import { test, expect } from "@playwright/test";
+import { loginAs } from "./auth";
+const API = process.env.TEST_API_URL || "http://127.0.0.1:8000";
+test.beforeEach(async ({ page }) => {
+  await loginAs(page);
+  await page.request.post(API + "/api/reset");
+  await loginAs(page);
 });
-test('buyer forecasting, CSV validation and private policy',async({page})=>{
- await page.goto('/');
- await page.getByLabel('Switch demo participant').selectOption('r1');
- await page.getByRole('button',{name:'Inventory & forecast',exact:true}).click();
- await page.getByRole('button',{name:'Run forecast',exact:true}).click();
- await expect(page.getByRole('status')).toContainText('Forecast refreshed',{timeout:180000});
- await expect(page.getByText('Amazon Chronos-2 · pretrained, no fine-tuning',{exact:true})).toBeVisible();
- await page.screenshot({path:'../docs/images/restaurant-forecast.png',fullPage:true});
- await page.getByRole('button',{name:'Create purchase request'}).click();
- // This opens an editable purchase request dialog.
- const dialog=page.getByRole('dialog');
- if(await dialog.count()) await dialog.getByRole('button',{name:/Approve|Create|Confirm/}).click();
- await page.getByRole('button',{name:'Import CSV',exact:true}).click();
- await page.getByLabel('CSV contents').fill('crop,quantity,unit,usable_until\nTomato,NaN,kg,2026-12-31');
- await page.getByRole('button',{name:'Validate & import'}).click();
- await expect(page.getByRole('dialog')).toContainText('Row 2');
- await page.getByRole('button',{name:'Close dialog'}).click();
- await page.getByRole('button',{name:'Agent settings',exact:true}).click();
- await expect(page.getByLabel('Maximum order budget (₹)')).toHaveValue('3000');
- await expect(page.getByLabel('Minimum selling price (₹ / kg)')).toHaveCount(0);
+test("farmer listing and three-buyer trade through settlement", async ({
+  page,
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "A better harvest." }),
+  ).toBeVisible();
+  await page
+    .getByRole("button", { name: "List a harvest", exact: true })
+    .click();
+  await page.getByLabel("Crop", { exact: true }).fill("Cucumber");
+  await page.getByLabel("Quantity (kg)", { exact: true }).fill("25");
+  await page.getByRole("button", { name: "Publish harvest" }).click();
+  await expect(page.getByRole("status")).toContainText("Saved");
+  await page.getByRole("button", { name: "Negotiations", exact: true }).click();
+  await page.getByRole("button", { name: "Run negotiation" }).click();
+  await expect(page.locator(".offer-card")).toHaveCount(3);
+  await page.screenshot({
+    path: "../docs/images/negotiation.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Choose this offer" }).first().click();
+  await page.getByRole("button", { name: "Orders", exact: true }).click();
+  await expect(
+    page.locator(".order").getByText("awaiting buyer", { exact: true }),
+  ).toBeVisible();
+  await loginAs(page, "r1");
+  await expect(
+    page.getByRole("heading", { name: "A well-stocked kitchen." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Orders", exact: true }).click();
+  await page.getByRole("button", { name: "Confirm agreement" }).click();
+  await page.getByRole("button", { name: "Fund simulated payment" }).click();
+  await loginAs(page, "farmer");
+  await page.getByRole("button", { name: "Orders", exact: true }).click();
+  await page.getByRole("button", { name: "Record pickup" }).click();
+  await loginAs(page, "r1");
+  await page.getByRole("button", { name: "Orders", exact: true }).click();
+  await page.getByRole("button", { name: "Confirm receipt" }).click();
+  await loginAs(page, "farmer");
+  await page.getByRole("button", { name: "Orders", exact: true }).click();
+  await page.getByRole("button", { name: "Release simulated funds" }).click();
+  await expect(page.locator(".order .badge")).toHaveText("settled");
+  await page.screenshot({
+    path: "../docs/images/order-settled.png",
+    fullPage: true,
+  });
+  expect(errors).toEqual([]);
 });
-test('mobile layout and accessible controls',async({page})=>{
- await page.setViewportSize({width:390,height:844});
- await page.goto('/');
- await expect(page.getByRole('heading',{name:'A better harvest.'})).toBeVisible();
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
- await expect(page.getByText('Loading farm illustration…',{exact:true})).toHaveCount(0);
- await page.waitForTimeout(1200);
- await page.screenshot({path:'../docs/images/mobile.png',fullPage:true});
- await page.getByRole('button',{name:'My harvest',exact:true}).click();
- await page.getByRole('button',{name:'Import CSV',exact:true}).click();
- await expect(page.getByRole('dialog')).toBeVisible();
- expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
+test("buyer forecasting, CSV validation and private policy", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await loginAs(page, "r1");
+  await page
+    .getByRole("button", { name: "Inventory & forecast", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Run forecast", exact: true }).click();
+  await expect(page.getByRole("status")).toContainText("Forecast refreshed", {
+    timeout: 180000,
+  });
+  await expect(
+    page.getByText("Amazon Chronos-2 · pretrained, no fine-tuning", {
+      exact: true,
+    }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "../docs/images/restaurant-forecast.png",
+    fullPage: true,
+  });
+  await page.getByRole("button", { name: "Create purchase request" }).click();
+  // This opens an editable purchase request dialog.
+  const dialog = page.getByRole("dialog");
+  if (await dialog.count())
+    await dialog
+      .getByRole("button", { name: /Approve|Create|Confirm/ })
+      .click();
+  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await page
+    .getByLabel("CSV contents")
+    .fill("crop,quantity,unit,usable_until\nTomato,NaN,kg,2026-12-31");
+  await page.getByRole("button", { name: "Validate & import" }).click();
+  await expect(page.getByRole("dialog")).toContainText("Row 2");
+  await page.getByRole("button", { name: "Close dialog" }).click();
+  await page
+    .getByRole("button", { name: "Agent settings", exact: true })
+    .click();
+  await expect(page.getByLabel("Maximum order budget (₹)")).toHaveValue("3000");
+  await expect(page.getByLabel("Minimum selling price (₹ / kg)")).toHaveCount(
+    0,
+  );
 });
-test('successful farmer and restaurant CSV onboarding',async({page,request})=>{
- await page.goto('/');
- await page.getByRole('button',{name:'My harvest',exact:true}).click();
- await page.getByRole('button',{name:'Import CSV',exact:true}).click();
- const harvest=await (await request.get(API+'/api/templates/harvest.csv')).text();
- await page.getByLabel('CSV contents').fill(harvest.replace('Tomato','Cucumber'));
- await page.getByRole('button',{name:'Validate & import'}).click();
- await expect(page.getByRole('heading',{name:'Cucumber'})).toBeVisible();
- await page.getByLabel('Switch demo participant').selectOption('r1');
- await page.getByRole('button',{name:'Inventory & forecast',exact:true}).click();
- await page.getByRole('button',{name:'Import CSV',exact:true}).click();
- const inventory=await (await request.get(API+'/api/templates/inventory.csv')).text();
- await page.getByLabel('CSV contents').fill(inventory);
- await page.getByRole('checkbox').check();
- await page.getByRole('button',{name:'Validate & import'}).click();
- await expect(page.locator('tbody tr')).toHaveCount(1);
- await expect(page.locator('tbody')).toContainText('20 kg');
- await page.getByRole('button',{name:'Import CSV',exact:true}).click();
- await page.keyboard.press('Escape');
- await expect(page.getByRole('dialog')).toHaveCount(0);
- await expect(page.getByRole('button',{name:'Import CSV',exact:true})).toBeFocused();
+test("mobile layout and accessible controls", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(
+    page.getByRole("heading", { name: "A better harvest." }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBeTruthy();
+  await expect(
+    page.getByText("Loading farm illustration…", { exact: true }),
+  ).toHaveCount(0);
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: "../docs/images/mobile.png", fullPage: true });
+  await page.getByRole("button", { name: "My harvest", exact: true }).click();
+  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBeTruthy();
+});
+test("successful farmer and restaurant CSV onboarding", async ({
+  page,
+  request,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: "My harvest", exact: true }).click();
+  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  const harvest = await (
+    await page.request.get(API + "/api/templates/harvest.csv")
+  ).text();
+  await page
+    .getByLabel("CSV contents")
+    .fill(harvest.replace("Tomato", "Cucumber"));
+  await page.getByRole("button", { name: "Validate & import" }).click();
+  await expect(page.getByRole("heading", { name: "Cucumber" })).toBeVisible();
+  await loginAs(page, "r1");
+  await page
+    .getByRole("button", { name: "Inventory & forecast", exact: true })
+    .click();
+  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  const inventory = await (
+    await page.request.get(API + "/api/templates/inventory.csv")
+  ).text();
+  await page.getByLabel("CSV contents").fill(inventory);
+  await page.getByRole("checkbox").check();
+  await page.getByRole("button", { name: "Validate & import" }).click();
+  await expect(page.locator("tbody tr")).toHaveCount(1);
+  await expect(page.locator("tbody")).toContainText("20 kg");
+  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("dialog")).toHaveCount(0);
+  await expect(
+    page.getByRole("button", { name: "Import CSV", exact: true }),
+  ).toBeFocused();
 });

@@ -9,3 +9,5 @@ These are real Playwright captures of the locally running HarvestLink applicatio
 - `mobile.png`: narrow viewport layout.
 
 The browser suite regenerates the workflow captures. `frontend/e2e/inspect.mjs` captures the farmer overview. The separate recording script captures the complete demonstration.
+
+Entrance update: `landing.png`, `sign-in.png`, `farmer-assistant.png` and `kannada-workspace.png` show the animated entrance, scoped demo login and actual native-language farmer interface. The 3D bee is adapted from the user-owned Inception project.

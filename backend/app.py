@@ -7,10 +7,11 @@ from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Annotated
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request, Response
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, ConfigDict
 
+from backend import assistance, identity
 from backend.domain import (
     add_lot,
     baseline_forecast,
@@ -555,3 +556,95 @@ def refresh(x_actor: str = Header(default="farmer")):
     with transaction() as s:
         s["market"] = result
     return result
+
+
+# Login is scoped to one of four demo participants. Actor headers cannot override a session.
+
+
+app.middleware("http")(identity.protect)
+
+
+@app.post("/api/auth/login")
+def login(payload: Payload, request: Request, response: Response):
+    data = payload.model_dump()
+    username, password = str(data.get("username", "")), str(data.get("password", ""))
+    if len(password) > 128:
+        raise HTTPException(422, "Password is too long")
+    token = identity.authenticate(
+        username, password, request.client.host if request.client else "local"
+    )
+    if not token:
+        raise HTTPException(
+            401, "Check your username and password, or wait a minute before trying again."
+        )
+    response.set_cookie(
+        "harvest_session",
+        token,
+        httponly=True,
+        samesite="strict",
+        secure=request.url.scheme == "https",
+        max_age=43200,
+    )
+    actor = identity.ACCOUNTS[username]
+    _, s = read()
+    return {"actor": actor, "onboarded": bool(s.get("onboarded", {}).get(actor))}
+
+
+@app.get("/api/auth/session")
+def current_session(request: Request):
+    actor = identity.session(request)
+    _, s = read()
+    return {
+        "actor": actor,
+        "onboarded": bool(s.get("onboarded", {}).get(actor)) if actor else False,
+    }
+
+
+@app.post("/api/auth/logout")
+def logout(request: Request, response: Response):
+    identity.SESSIONS.pop(request.cookies.get("harvest_session", ""), None)
+    response.delete_cookie("harvest_session")
+    return {"ok": True}
+
+
+@app.post("/api/auth/onboard")
+def onboard(payload: Payload, x_actor: str = Header(default="farmer")):
+    actor = actor_id(x_actor)
+    data = payload.model_dump()
+    name, location = str(data.get("name", "")).strip(), str(data.get("location", "")).strip()
+    if not 2 <= len(name) <= 80 or not 2 <= len(location) <= 120:
+        raise ValueError("Enter a name and location (2–80 and 2–120 characters).")
+    with transaction() as s:
+        find(s["profiles"], actor).update(name=name, location=location)
+        s.setdefault("onboarded", {})[actor] = True
+    return {"actor": actor, "onboarded": True}
+
+
+@app.post("/api/localize")
+def localize(payload: Payload):
+    data = payload.model_dump()
+    return {
+        "translations": assistance.translate(data.get("texts", []), data.get("language", "en-IN"))
+    }
+
+
+@app.post("/api/assistant")
+def assistant_reply(payload: Payload, x_actor: str = Header(default="farmer")):
+    actor = actor_id(x_actor)
+    data = payload.model_dump()
+    question = str(data.get("question", "")).strip()
+    if not 1 <= len(question) <= 1000:
+        raise ValueError("Ask a question of up to 1,000 characters.")
+    _, s = read()
+    scoped = public_state(s, actor, modes())
+    context = {key: scoped.get(key) for key in ("lots", "offers", "orders", "market")}
+    return {"text": assistance.reply(question, data.get("language", "en-IN"), context)}
+
+
+@app.post("/api/assistant/speech")
+def assistant_speech(payload: Payload):
+    data = payload.model_dump()
+    text = str(data.get("text", "")).strip()
+    if not 1 <= len(text) <= 2400:
+        raise ValueError("Speech text must contain 1–2,400 characters.")
+    return {"audio": assistance.speech(text, data.get("language", "en-IN")), "mime": "audio/wav"}

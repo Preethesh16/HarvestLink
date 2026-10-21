@@ -12,6 +12,7 @@ from backend.domain import baseline_forecast, seed
 @pytest.fixture
 def client(tmp_path, monkeypatch):
     monkeypatch.setattr(module, "DB", tmp_path / "test.sqlite3")
+    monkeypatch.setenv("HARVESTLINK_TEST_ROLE_ACCESS", "1")
     monkeypatch.setenv("NEGOTIATION_MODE", "local")
     monkeypatch.setenv("FORECAST_MODE", "baseline")
     return TestClient(module.app)

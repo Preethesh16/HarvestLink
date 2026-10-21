@@ -7,7 +7,6 @@ import {
   BarChart3,
   Check,
   CheckCircle2,
-  ChevronDown,
   Clock3,
   Leaf,
   LayoutDashboard,
@@ -24,6 +23,8 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { useLocale } from "./Locale";
+import Assistant from "./Assistant";
 import ProduceArt from "./ProduceArt";
 const Farm = lazy(() => import("./Farm"));
 type Row = Record<string, any>;
@@ -58,13 +59,19 @@ function Badge({
   children: ReactNode;
   tone?: string;
 }) {
-  return <span className={`badge ${tone}`}>{children}</span>;
+  const { tr } = useLocale();
+  return (
+    <span className={`badge ${tone}`}>
+      {typeof children === "string" ? tr(children) : children}
+    </span>
+  );
 }
 function Empty({ children }: { children: ReactNode }) {
+  const { tr } = useLocale();
   return (
     <div className="empty">
       <Sprout size={28} />
-      <p>{children}</p>
+      <p>{typeof children === "string" ? tr(children) : children}</p>
     </div>
   );
 }
@@ -81,9 +88,10 @@ function Field({
   type?: string;
   required?: boolean;
 }) {
+  const { tr } = useLocale();
   return (
     <label className="field">
-      {label}
+      {tr(label)}
       <input
         name={name}
         type={type}
@@ -95,10 +103,9 @@ function Field({
     </label>
   );
 }
-export default function App() {
-  const [actor, setActor] = useState(
-    localStorage.getItem("harvest-role") || "farmer",
-  );
+export default function App({ initialActor }: { initialActor: string }) {
+  const { tr } = useLocale();
+  const [actor, setActor] = useState(initialActor);
   const [page, setPage] = useState("Overview");
   const [state, setState] = useState<State | null>(null);
   const [busy, setBusy] = useState(false);
@@ -312,9 +319,9 @@ export default function App() {
           <Badge>{lot.grade || "Grade A"}</Badge>
         </div>
         <div className="lot-details">
-          <div className="eyebrow">FRESH FROM THE FARM</div>
+          <div className="eyebrow">{tr("FRESH FROM THE FARM")}</div>
           <h3>
-            {lot.crop}
+            {tr(lot.crop)}
             <span>{lot.variety || "Local harvest"}</span>
           </h3>
           <div className="lot-facts">
@@ -325,7 +332,7 @@ export default function App() {
                 lot.quantity -
                   Number(lot.reserved || 0) -
                   Number(lot.sold || 0)}{" "}
-              kg available
+              {tr("kg available")}
             </span>
             <span>
               <MapPin size={14} />
@@ -337,7 +344,7 @@ export default function App() {
           <div className="lot-footer">
             <div>
               <strong>{money(lot.ask_price)}</strong>
-              <small> / kg asking price</small>
+              <small>{tr("/ kg asking price")}</small>
             </div>
             <button
               className="text-button"
@@ -363,7 +370,7 @@ export default function App() {
                   : (setRequestLot(lot), setModal("request"))
               }
             >
-              {farmer ? "Find offers" : "Request produce"}
+              {tr(farmer ? "Find offers" : "Request produce")}
               <ArrowUpRight size={16} />
             </button>
           </div>
@@ -377,26 +384,36 @@ export default function App() {
         <div className="section-heading">
           <div>
             <h2>
-              {farmer ? "Your harvest. Your decision." : "Your agent’s offers"}
+              {tr(
+                farmer ? "Your harvest. Your decision." : "Your agent’s offers",
+              )}
             </h2>
             <p>
-              {typeof state?.mode === "object" &&
-              state.mode.negotiation === "openai"
-                ? "AI-assisted, server-validated offers"
-                : "Local rule-based demonstration"}{" "}
-              · Buyer collection · Final selection stays with the farmer.
+              {tr(
+                typeof state?.mode === "object" &&
+                  state.mode.negotiation === "openai"
+                  ? "AI-assisted, server-validated offers"
+                  : "Local rule-based demonstration",
+              )}{" "}
+              {tr(
+                "· Buyer collection · Final selection stays with the farmer.",
+              )}
             </p>
           </div>
           <div className="negotiation-controls">
             <select
-              aria-label="Harvest to negotiate"
+              aria-label={tr("Harvest to negotiate")}
               value={selectedLotId || ""}
               disabled={busy}
               onChange={(e) => setNegotiationLot(e.target.value)}
             >
               {lots.map((l) => (
                 <option key={l.id} value={l.id}>
-                  {l.crop} · {l.variety} · {l.quantity} kg
+                  {l.crop}
+                  {" · "}
+                  {l.variety}
+                  {" · "}
+                  {l.quantity} {tr("kg")}
                 </option>
               ))}
             </select>
@@ -412,13 +429,15 @@ export default function App() {
               }
             >
               <Sparkles size={16} />
-              Run negotiation
+              {tr("Run negotiation")}
             </button>
           </div>
         </div>
         {!selectedOffers.length ? (
           <Empty>
-            No offers yet. Create a buyer requirement, then run a negotiation.
+            {tr(
+              "No offers yet. Create a buyer requirement, then run a negotiation.",
+            )}
           </Empty>
         ) : (
           <div className="offers-grid">
@@ -434,17 +453,18 @@ export default function App() {
                 </div>
                 <h3>{buyerName(o.buyer_id || o.buyer || o.actor)}</h3>
                 <p>
-                  {o.quantity} kg ·{" "}
+                  {o.quantity}
+                  {tr("kg ·")}{" "}
                   {o.crop ||
                     lots.find((l) => l.id === o.lot_id)?.crop ||
                     "Produce"}
                 </p>
                 <div className="offer-price">
                   {money(o.price ?? o.unit_price)}
-                  <span>/ kg</span>
+                  <span>{tr("/ kg")}</span>
                 </div>
                 <div className="offer-line">
-                  <span>Gross return</span>
+                  <span>{tr("Gross return")}</span>
                   <strong>
                     {money(
                       o.total ??
@@ -454,26 +474,32 @@ export default function App() {
                   </strong>
                 </div>
                 <div className="offer-line">
-                  <span>Collection</span>
-                  <strong>Buyer collects</strong>
+                  <span>{tr("Collection")}</span>
+                  <strong>{tr("Buyer collects")}</strong>
                 </div>
                 <div className="offer-line">
-                  <span>Nearby distance (demo)</span>
-                  <strong>{o.distance_km ?? "—"} km</strong>
+                  <span>{tr("Nearby distance (demo)")}</span>
+                  <strong>
+                    {o.distance_km ?? "—"}
+                    {tr("km")}
+                  </strong>
                 </div>
                 <div className="offer-line">
-                  <span>Transport deduction</span>
-                  <strong>₹0</strong>
+                  <span>{tr("Transport deduction")}</span>
+                  <strong>{tr("₹0")}</strong>
                 </div>
                 {o.reason && <p className="offer-reason">{o.reason}</p>}
                 {o.rounds?.length > 0 && (
                   <details className="rounds">
                     <summary>
-                      {o.rounds.length} negotiation steps · inspect
+                      {o.rounds.length}
+                      {tr("negotiation steps · inspect")}
                     </summary>
                     {o.rounds.map((r: Row, j: number) => (
                       <p key={j}>
-                        <strong>{pretty(r.speaker)}</strong> · {money(r.price)}
+                        <strong>{pretty(r.speaker)}</strong>
+                        {" · "}
+                        {money(r.price)}
                         <br />
                         {r.message}
                       </p>
@@ -497,13 +523,13 @@ export default function App() {
                       )
                     }
                   >
-                    Choose this offer
+                    {tr("Choose this offer")}
                     <ArrowRight size={16} />
                   </button>
                 ) : (
                   <div className="inline-note">
                     <Clock3 size={15} />
-                    Awaiting the farmer’s decision
+                    {tr("Awaiting the farmer’s decision")}
                   </div>
                 )}
               </article>
@@ -512,11 +538,13 @@ export default function App() {
         )}
         {!farmer && (
           <section className="panel requirements">
-            <h3>Your approved purchase requests</h3>
+            <h3>{tr("Your approved purchase requests")}</h3>
             {state?.requirements?.map((r: Row) => (
               <p key={r.id}>
-                {r.quantity} kg · {r.crop || "Tomato"} ·{" "}
-                {pretty(r.status || "approved")}
+                {r.quantity}
+                {tr("kg ·")}
+                {r.crop || "Tomato"}
+                {" · "} {pretty(r.status || "approved")}
               </p>
             ))}
           </section>
@@ -529,8 +557,8 @@ export default function App() {
     return (
       <section className="panel activity">
         <div className="panel-heading">
-          <h3>Negotiation journal</h3>
-          <Badge tone="neutral">Actual system events</Badge>
+          <h3>{tr("Negotiation journal")}</h3>
+          <Badge tone="neutral">{tr("Actual system events")}</Badge>
         </div>
         {(state?.events || [])
           .slice(-8)
@@ -560,7 +588,9 @@ export default function App() {
             </div>
           ))}
         {!state?.events?.length && (
-          <p className="muted">Your trading activity will appear here.</p>
+          <p className="muted">
+            {tr("Your trading activity will appear here.")}
+          </p>
         )}
       </section>
     );
@@ -570,13 +600,13 @@ export default function App() {
       <>
         <div className="section-heading">
           <div>
-            <h2>From agreement to arrival.</h2>
-            <p>Every payment below is a simulation. No money moves.</p>
+            <h2>{tr("From agreement to arrival.")}</h2>
+            <p>{tr("Every payment below is a simulation. No money moves.")}</p>
           </div>
-          <Badge tone="amber">Demo payment protection</Badge>
+          <Badge tone="amber">{tr("Demo payment protection")}</Badge>
         </div>
         {!orders.length ? (
-          <Empty>Selected offers become orders here.</Empty>
+          <Empty>{tr("Selected offers become orders here.")}</Empty>
         ) : (
           orders.map((o) => (
             <section className="panel order" key={o.id}>
@@ -586,13 +616,14 @@ export default function App() {
                     {buyerName(o.buyer_id || o.buyer)}
                   </div>
                   <h3>
-                    {o.quantity} kg {o.crop || "Tomatoes"}
+                    {o.quantity} {tr("kg")}
+                    {o.crop || "Tomatoes"}
                   </h3>
                 </div>
                 <Badge>{pretty(o.status)}</Badge>
               </div>
               <div className="order-amount">
-                <span>Agreement total</span>
+                <span>{tr("Agreement total")}</span>
                 <strong>
                   {money(
                     o.total ??
@@ -649,7 +680,7 @@ export default function App() {
                         )
                       }
                     >
-                      Confirm agreement
+                      {tr("Confirm agreement")}
                     </button>
                   )}
                 {!farmer && ["confirmed", "reserved"].includes(o.status) && (
@@ -664,7 +695,7 @@ export default function App() {
                       )
                     }
                   >
-                    Fund simulated payment
+                    {tr("Fund simulated payment")}
                   </button>
                 )}
                 {farmer && o.status === "funded" && (
@@ -675,7 +706,7 @@ export default function App() {
                       action(`/orders/${o.id}/pickup`, {}, "Pickup recorded")
                     }
                   >
-                    Record pickup
+                    {tr("Record pickup")}
                   </button>
                 )}
                 {!farmer && ["picked_up", "in_transit"].includes(o.status) && (
@@ -686,7 +717,7 @@ export default function App() {
                       action(`/orders/${o.id}/receive`, {}, "Delivery received")
                     }
                   >
-                    Confirm receipt
+                    {tr("Confirm receipt")}
                   </button>
                 )}
                 {farmer && o.status === "received" && (
@@ -701,7 +732,7 @@ export default function App() {
                       )
                     }
                   >
-                    Release simulated funds
+                    {tr("Release simulated funds")}
                   </button>
                 )}
                 {[
@@ -718,7 +749,7 @@ export default function App() {
                       action(`/orders/${o.id}/cancel`, {}, "Order cancelled")
                     }
                   >
-                    Cancel order
+                    {tr("Cancel order")}
                   </button>
                 )}
               </div>
@@ -740,9 +771,11 @@ export default function App() {
       <>
         <div className="section-heading">
           <div>
-            <h2>Buy what your kitchen needs.</h2>
+            <h2>{tr("Buy what your kitchen needs.")}</h2>
             <p>
-              Consumption forecasts meet usable stock and estimated shelf life.
+              {tr(
+                "Consumption forecasts meet usable stock and estimated shelf life.",
+              )}
             </p>
           </div>
           <button
@@ -751,13 +784,13 @@ export default function App() {
             onClick={() => action("/forecast", {}, "Forecast refreshed")}
           >
             <BarChart3 size={16} />
-            Run forecast
+            {tr("Run forecast")}
           </button>
         </div>
         <div className="forecast-grid">
           <section className="panel forecast">
             <div className="panel-heading">
-              <h3>Seven-day consumption outlook</h3>
+              <h3>{tr("Seven-day consumption outlook")}</h3>
               <Badge tone="neutral">
                 {pretty(forecast.model || forecast.method || "Baseline demo")}
               </Badge>
@@ -808,22 +841,24 @@ export default function App() {
             <span className="circle-icon">
               <Package size={22} />
             </span>
-            <div className="eyebrow">SUGGESTED REPLENISHMENT</div>
+            <div className="eyebrow">{tr("SUGGESTED REPLENISHMENT")}</div>
             <h2>
               {suggestion}
-              <span> kg</span>
+              <span> {tr("kg")}</span>
             </h2>
             <p>
-              Projected shortage:{" "}
+              {tr("Projected shortage:")}{" "}
               <strong>
                 {forecast.shortage_date || "No shortage projected"}
               </strong>
               <br />
-              Order by:{" "}
+              {tr("Order by:")}{" "}
               <strong>{forecast.order_by || "Review forecast"}</strong>
               <br />
-              Expected unusable stock:{" "}
-              <strong>{forecast.expected_waste ?? 0} kg</strong>
+              {tr("Expected unusable stock:")}{" "}
+              <strong>
+                {forecast.expected_waste ?? 0} {tr("kg")}
+              </strong>
             </p>
             <button
               className="button light"
@@ -836,52 +871,64 @@ export default function App() {
                 )
               }
             >
-              Create purchase request
+              {tr("Create purchase request")}
               <ArrowRight size={16} />
             </button>
           </section>
         </div>
         {forecast.evaluation && (
           <section className="panel">
-            <h3>Forecast evaluation</h3>
+            <h3>{tr("Forecast evaluation")}</h3>
             <p className="muted">
-              Held-out synthetic history · Chronos MAE:{" "}
-              {forecast.evaluation.chronos_mae} kg · Baseline MAE:{" "}
+              {tr("Held-out synthetic history · Chronos MAE:")}{" "}
+              {forecast.evaluation.chronos_mae}
+              {tr("kg · Baseline MAE:")}{" "}
               {forecast.evaluation.seasonal_naive_mae ??
                 forecast.evaluation.baseline_mae}{" "}
-              kg. Lower is better. Synthetic results do not establish real-world
-              accuracy.
+              {tr(
+                "kg. Lower is better. Synthetic results do not establish real-world accuracy.",
+              )}
             </p>
             {forecast.intervals && (
               <details className="forecast-details">
                 <summary>
-                  Inspect model uncertainty · 10th–90th percentile
+                  {tr("Inspect model uncertainty · 10th–90th percentile")}
                 </summary>
                 <div className="table-wrap">
                   <table>
                     <thead>
                       <tr>
-                        <th>Day</th>
-                        <th>Lower</th>
-                        <th>Median</th>
-                        <th>Upper</th>
+                        <th>{tr("Day")}</th>
+                        <th>{tr("Lower")}</th>
+                        <th>{tr("Median")}</th>
+                        <th>{tr("Upper")}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {forecast.intervals.map((q: number[], i: number) => (
                         <tr key={i}>
-                          <td>Day {i + 1}</td>
-                          <td>{Number(q[0]).toFixed(1)} kg</td>
-                          <td>{Number(q[1]).toFixed(1)} kg</td>
-                          <td>{Number(q[2]).toFixed(1)} kg</td>
+                          <td>
+                            {tr("Day")}
+                            {i + 1}
+                          </td>
+                          <td>
+                            {Number(q[0]).toFixed(1)} {tr("kg")}
+                          </td>
+                          <td>
+                            {Number(q[1]).toFixed(1)} {tr("kg")}
+                          </td>
+                          <td>
+                            {Number(q[2]).toFixed(1)} {tr("kg")}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
                 <p className="caption">
-                  Quantile estimates reflect model uncertainty, not a guaranteed
-                  stock level.
+                  {tr(
+                    "Quantile estimates reflect model uncertainty, not a guaranteed stock level.",
+                  )}
                 </p>
               </details>
             )}
@@ -889,7 +936,7 @@ export default function App() {
         )}
         <section className="panel">
           <div className="panel-heading">
-            <h3>Inventory batches</h3>
+            <h3>{tr("Inventory batches")}</h3>
             <button
               className="text-button"
               onClick={() => {
@@ -898,17 +945,17 @@ export default function App() {
               }}
             >
               <Upload size={15} />
-              Import CSV
+              {tr("Import CSV")}
             </button>
           </div>
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Ingredient</th>
-                  <th>Available</th>
-                  <th>Usable until</th>
-                  <th>Batch</th>
+                  <th>{tr("Ingredient")}</th>
+                  <th>{tr("Available")}</th>
+                  <th>{tr("Usable until")}</th>
+                  <th>{tr("Batch")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -918,7 +965,9 @@ export default function App() {
                       <span className="crop-dot" />
                       {b.crop || b.ingredient}
                     </td>
-                    <td>{b.quantity} kg</td>
+                    <td>
+                      {b.quantity} {tr("kg")}
+                    </td>
                     <td>
                       {b.usable_until || b.expiry_date || b.expires_at || "—"}
                     </td>
@@ -928,7 +977,9 @@ export default function App() {
               </tbody>
             </table>
           </div>
-          {!inventory.length && <Empty>Import inventory to begin.</Empty>}
+          {!inventory.length && (
+            <Empty>{tr("Import inventory to begin.")}</Empty>
+          )}
           <div className="panel-bottom">
             <button
               className="text-button"
@@ -937,11 +988,11 @@ export default function App() {
                 setModal("import");
               }}
             >
-              Upload consumption history
+              {tr("Upload consumption history")}
               <ArrowUpRight size={16} />
             </button>
             <a href="/api/templates/consumption.csv" download>
-              Download history template
+              {tr("Download history template")}
             </a>
           </div>
         </section>
@@ -949,7 +1000,9 @@ export default function App() {
     );
   }
   return (
-    <div className="app">
+    <div
+      className={`app ${farmer ? "farmer-workspace" : "restaurant-workspace"}`}
+    >
       <aside className="sidebar">
         <a
           className="brand"
@@ -962,29 +1015,15 @@ export default function App() {
           <span className="brand-icon">
             <Sprout size={25} />
           </span>
-          harvestlink<span className="brand-period">.</span>
+          {tr("harvestlink")}
+          <span className="brand-period">{tr(".")}</span>
         </a>
-        <div className="workspace-label">YOUR WORKSPACE</div>
+        <div className="workspace-label">{tr("YOUR WORKSPACE")}</div>
         <div className="role-select">
           <span className="role-icon">
             {farmer ? <Sprout size={20} /> : <Store size={20} />}
           </span>
-          <select
-            aria-label="Switch demo participant"
-            disabled={busy}
-            value={actor}
-            onChange={(e) => {
-              setActor(e.target.value);
-              setPage("Overview");
-            }}
-          >
-            {Object.entries(names).map(([v, n]) => (
-              <option key={v} value={v}>
-                {n}
-              </option>
-            ))}
-          </select>
-          <ChevronDown size={14} />
+          <strong>{tr(names[actor])}</strong>
         </div>
         <nav>
           {tabs.map((t, i) => {
@@ -996,7 +1035,7 @@ export default function App() {
                 className={page === t ? "active" : ""}
               >
                 <Icon size={18} />
-                {t}
+                {tr(t)}
                 {t === "Negotiations" && offers.length > 0 && (
                   <span className="nav-count">{offers.length}</span>
                 )}
@@ -1006,10 +1045,11 @@ export default function App() {
         </nav>
         <div className="sidebar-note">
           <span className="pulse" />
-          <strong>Human choice. Agent assistance.</strong>
+          <strong>{tr("Human choice. Agent assistance.")}</strong>
           <p>
-            Your agent negotiates within your limits. You make the final
-            decision.
+            {tr(
+              "Your agent negotiates within your limits. You make the final decision.",
+            )}
           </p>
         </div>
         <div className="sidebar-bottom">
@@ -1023,11 +1063,14 @@ export default function App() {
           <div>
             <strong>{profile.name || names[actor]}</strong>
             <small>
-              {farmer ? "Grower" : "Buyer"} ·{" "}
-              {profile.location || "Local workspace"}
+              {tr(farmer ? "Grower" : "Buyer")}
+              {" · "} {profile.location || "Local workspace"}
             </small>
           </div>
-          <button aria-label="Edit profile" onClick={() => setModal("profile")}>
+          <button
+            aria-label={tr("Edit profile")}
+            onClick={() => setModal("profile")}
+          >
             <Settings2 size={17} />
           </button>
         </div>
@@ -1035,18 +1078,18 @@ export default function App() {
       <main>
         <header className="topbar">
           <div>
-            <span className="breadcrumb">Workspace</span>
-            <span className="slash">/</span>
-            {page}
+            <span className="breadcrumb">{tr("Workspace")}</span>
+            <span className="slash">{tr("/")}</span>
+            {tr(page)}
           </div>
           <div className="topbar-right">
             <span className="demo-label">
               <span />
-              Interactive demo
+              {tr("Interactive demo")}
             </span>
             <button
               className="icon-button"
-              aria-label="Refresh workspace"
+              aria-label={tr("Refresh workspace")}
               onClick={() => load()}
             >
               <RefreshCw size={17} />
@@ -1056,7 +1099,7 @@ export default function App() {
                 className="button small secondary"
                 onClick={() => setModal("reset")}
               >
-                Reset demo
+                {tr("Reset demo")}
               </button>
             )}
           </div>
@@ -1065,13 +1108,16 @@ export default function App() {
           {busy && !modal && (
             <div className="alert busy" role="status">
               <RefreshCw size={16} />
-              {busyText}
+              {tr(busyText)}
             </div>
           )}
           {error && (
             <div className="alert error" role="alert">
-              {error}
-              <button aria-label="Dismiss error" onClick={() => setError("")}>
+              {tr(error)}
+              <button
+                aria-label={tr("Dismiss error")}
+                onClick={() => setError("")}
+              >
                 <X size={16} />
               </button>
             </div>
@@ -1079,9 +1125,9 @@ export default function App() {
           {notice && (
             <div className="alert success" role="status">
               <CheckCircle2 size={18} />
-              {notice}
+              {tr(notice)}
               <button
-                aria-label="Dismiss notification"
+                aria-label={tr("Dismiss notification")}
                 onClick={() => setNotice("")}
               >
                 <X size={16} />
@@ -1091,9 +1137,9 @@ export default function App() {
           {!state ? (
             <div className="loading">
               <Sprout size={36} />
-              <h2>Opening your workspace…</h2>
+              <h2>{tr("Opening your workspace…")}</h2>
               <button className="button secondary" onClick={() => load()}>
-                Try connection again
+                {tr("Try connection again")}
               </button>
             </div>
           ) : (
@@ -1104,27 +1150,29 @@ export default function App() {
                     <div className="hero-copy">
                       <div className="eyebrow">
                         <span className="tiny-line" />
-                        GROW TOGETHER. TRADE BETTER.
+                        {tr("GROW TOGETHER. TRADE BETTER.")}
                       </div>
                       <h1>
                         {farmer ? (
                           <>
-                            A better harvest.
+                            {tr("A better harvest.")}
                             <br />
-                            <em>A better deal.</em>
+                            <em>{tr("A better deal.")}</em>
                           </>
                         ) : (
                           <>
-                            A well-stocked kitchen.
+                            {tr("A well-stocked kitchen.")}
                             <br />
-                            <em>Less left to chance.</em>
+                            <em>{tr("Less left to chance.")}</em>
                           </>
                         )}
                       </h1>
                       <p>
-                        {farmer
-                          ? "Connect your harvest to nearby kitchens. Let your agent find the offers. Keep the final choice."
-                          : "Turn tomorrow’s needs into today’s purchase decisions. Source directly from local growers."}
+                        {tr(
+                          farmer
+                            ? "Connect your harvest to nearby kitchens. Let your agent find the offers. Keep the final choice."
+                            : "Turn tomorrow’s needs into today’s purchase decisions. Source directly from local growers.",
+                        )}
                       </p>
                       <div className="actions">
                         <button
@@ -1140,14 +1188,14 @@ export default function App() {
                           ) : (
                             <BarChart3 size={17} />
                           )}
-                          {farmer ? "List a harvest" : "Plan my purchases"}
+                          {tr(farmer ? "List a harvest" : "Plan my purchases")}
                           <ArrowRight size={17} />
                         </button>
                         <button
                           className="text-button"
                           onClick={() => setPage("Negotiations")}
                         >
-                          View negotiations
+                          {tr("View negotiations")}
                           <ArrowUpRight size={17} />
                         </button>
                       </div>
@@ -1155,7 +1203,7 @@ export default function App() {
                     <Suspense
                       fallback={
                         <div className="farm-scene">
-                          Loading farm illustration…
+                          {tr("Loading farm illustration…")}
                         </div>
                       }
                     >
@@ -1167,20 +1215,22 @@ export default function App() {
                       </span>
                       <div>
                         <strong>
-                          {available} <small>kg available</small>
+                          {available} <small>{tr("kg available")}</small>
                         </strong>
                         <span>
                           {
                             profiles.filter((p) => p.role === "restaurant")
                               .length
                           }{" "}
-                          connected kitchens · demo network
+                          {tr("connected kitchens · demo network")}
                         </span>
                       </div>
                     </div>
                     <span className="hero-stamp">
                       <Leaf size={13} />
-                      Illustrative farm landscape · your harvest, connected
+                      {tr(
+                        "Illustrative farm landscape · your harvest, connected",
+                      )}
                     </span>
                   </section>
                   <div className="metrics">
@@ -1209,7 +1259,7 @@ export default function App() {
                       icon={<Store size={20} />}
                     />
                     <Metric
-                      title="Active orders"
+                      title={tr("Active orders")}
                       value={String(
                         orders.filter(
                           (o) =>
@@ -1247,12 +1297,16 @@ export default function App() {
                       <div className="section-heading">
                         <div>
                           <div className="eyebrow">
-                            {farmer ? "FROM YOUR FIELDS" : "FROM LOCAL FIELDS"}
+                            {tr(
+                              farmer ? "FROM YOUR FIELDS" : "FROM LOCAL FIELDS",
+                            )}
                           </div>
                           <h2>
-                            {farmer
-                              ? "Your harvest, ready for its next chapter."
-                              : "Fresh opportunities nearby."}
+                            {tr(
+                              farmer
+                                ? "Your harvest, ready for its next chapter."
+                                : "Fresh opportunities nearby.",
+                            )}
                           </h2>
                         </div>
                         <button
@@ -1261,7 +1315,7 @@ export default function App() {
                             setPage(farmer ? "My harvest" : "Marketplace")
                           }
                         >
-                          View all
+                          {tr("View all")}
                           <ArrowRight size={16} />
                         </button>
                       </div>
@@ -1269,12 +1323,12 @@ export default function App() {
                         {lots.slice(0, 1).map((l) => renderLotCard({ lot: l }))}
                         <article className="harvest-journey">
                           <div className="eyebrow">
-                            THE PATH TO A BETTER DEAL
+                            {tr("THE PATH TO A BETTER DEAL")}
                           </div>
                           <h3>
-                            From your fields.
+                            {tr("From your fields.")}
                             <br />
-                            <em>To their kitchens.</em>
+                            <em>{tr("To their kitchens.")}</em>
                           </h3>
                           <div className="journey-path">
                             {[
@@ -1300,7 +1354,7 @@ export default function App() {
                               },
                             ].map((step, i) => (
                               <button
-                                key={step.label}
+                                key={tr(step.label)}
                                 onClick={() => setPage(step.page)}
                               >
                                 <span className="step-icon">
@@ -1308,7 +1362,7 @@ export default function App() {
                                 </span>
                                 <span>
                                   <strong>{step.label}</strong>
-                                  <small>{step.description}</small>
+                                  <small>{tr(step.description)}</small>
                                 </span>
                                 <ArrowUpRight size={15} />
                               </button>
@@ -1316,12 +1370,12 @@ export default function App() {
                           </div>
                           <div className="journey-foot">
                             <span className="pulse" />
-                            Connected to{" "}
+                            {tr("Connected to")}{" "}
                             {
                               profiles.filter((p) => p.role === "restaurant")
                                 .length
                             }{" "}
-                            restaurant workspaces
+                            {tr("restaurant workspaces")}
                           </div>
                         </article>
                       </div>
@@ -1332,11 +1386,13 @@ export default function App() {
                           <BarChart3 size={20} />
                         </span>
                         <Badge tone="amber">
-                          {market?.status === "reported"
-                            ? "Reported prices"
-                            : market?.status === "cached"
-                              ? "Cached reference"
-                              : "Demo reference"}
+                          {tr(
+                            market?.status === "reported"
+                              ? "Reported prices"
+                              : market?.status === "cached"
+                                ? "Cached reference"
+                                : "Demo reference",
+                          )}
                         </Badge>
                       </div>
                       <button
@@ -1347,29 +1403,29 @@ export default function App() {
                         }
                       >
                         <RefreshCw size={12} />
-                        Refresh reference
+                        {tr("Refresh reference")}
                       </button>
-                      <div className="eyebrow">KNOW YOUR MARKET</div>
+                      <div className="eyebrow">{tr("KNOW YOUR MARKET")}</div>
                       <h3>
-                        Know the market.
+                        {tr("Know the market.")}
                         <br />
-                        <em>Own the conversation.</em>
+                        <em>{tr("Own the conversation.")}</em>
                       </h3>
                       <div className="market-price">
                         {market?.modal_price != null ? (
                           <>
                             {money(market.modal_price)}
-                            <small>/ kg</small>
+                            <small>{tr("/ kg")}</small>
                           </>
                         ) : (
                           <span className="reported-label">
-                            See reported prices
+                            {tr("See reported prices")}
                           </span>
                         )}
                       </div>
                       <p>
-                        {market?.market || "Mangaluru"} ·{" "}
-                        {market?.commodity || market?.crop || "Tomato"}
+                        {market?.market || "Mangaluru"}
+                        {" · "} {market?.commodity || market?.crop || "Tomato"}
                       </p>
                       <div className="market-date">
                         <Clock3 size={14} />
@@ -1378,24 +1434,37 @@ export default function App() {
                           "Dated synthetic fixture"}
                       </div>
                       <p className="caption">
-                        {market?.source}. Compare grade, location and collection
-                        terms.{" "}
-                        {market?.status === "demo"
-                          ? "This is not a live government quote."
-                          : ""}
+                        {market?.source ? tr(market.source) : ""}
+                        {tr(
+                          ". Compare grade, location and collection terms.",
+                        )}{" "}
+                        {tr(
+                          market?.status === "demo"
+                            ? "This is not a live government quote."
+                            : "",
+                        )}
                       </p>
                       {market?.records?.length > 0 && (
                         <details className="market-records">
-                          <summary>Inspect source records</summary>
+                          <summary>{tr("Inspect source records")}</summary>
                           {market.records
                             .slice(0, 5)
                             .map((r: Row, i: number) => (
                               <p key={i}>
-                                {r.market} · {r.commodity} · {r.variety}
+                                {r.market}
+                                {" · "}
+                                {r.commodity}
+                                {" · "}
+                                {r.variety}
                                 <br />
-                                Modal: {r.modal_price} · {r.arrival_date}
+                                {tr("Modal:")}
+                                {r.modal_price}
+                                {" · "}
+                                {r.arrival_date}
                                 <br />
-                                Source unit unverified; not converted to ₹/kg.
+                                {tr(
+                                  "Source unit unverified; not converted to ₹/kg.",
+                                )}
                               </p>
                             ))}
                         </details>
@@ -1407,17 +1476,18 @@ export default function App() {
                       <ShieldCheck size={22} />
                     </span>
                     <div>
-                      <h3>Confidence at every step.</h3>
+                      <h3>{tr("Confidence at every step.")}</h3>
                       <p>
-                        Clear offers. Your approval. Simulated payment
-                        protection.
+                        {tr(
+                          "Clear offers. Your approval. Simulated payment protection.",
+                        )}
                       </p>
                     </div>
                     <button
                       className="text-button"
                       onClick={() => setPage("Orders")}
                     >
-                      Follow your orders
+                      {tr("Follow your orders")}
                       <ArrowRight size={17} />
                     </button>
                   </div>
@@ -1427,16 +1497,20 @@ export default function App() {
                 <>
                   <div className="section-heading">
                     <div>
-                      <div className="eyebrow">FRESH CONNECTIONS</div>
+                      <div className="eyebrow">{tr("FRESH CONNECTIONS")}</div>
                       <h1 className="page-title">
-                        {farmer
-                          ? "Good things start here."
-                          : "Meet your next harvest."}
+                        {tr(
+                          farmer
+                            ? "Good things start here."
+                            : "Meet your next harvest.",
+                        )}
                       </h1>
                       <p>
-                        {farmer
-                          ? "Publish your produce and let nearby demand find you."
-                          : "Create a requirement, then let your agent negotiate within your limits."}
+                        {tr(
+                          farmer
+                            ? "Publish your produce and let nearby demand find you."
+                            : "Create a requirement, then let your agent negotiate within your limits.",
+                        )}
                       </p>
                     </div>
                     {farmer && (
@@ -1449,14 +1523,14 @@ export default function App() {
                           }}
                         >
                           <Upload size={16} />
-                          Import CSV
+                          {tr("Import CSV")}
                         </button>
                         <button
                           className="button"
                           onClick={() => setModal("lot")}
                         >
                           <Plus size={16} />
-                          New harvest
+                          {tr("New harvest")}
                         </button>
                       </div>
                     )}
@@ -1465,7 +1539,9 @@ export default function App() {
                     {lots.map((l) => renderLotCard({ lot: l }))}
                   </div>
                   {!lots.length && (
-                    <Empty>No harvests yet. Add your first listing.</Empty>
+                    <Empty>
+                      {tr("No harvests yet. Add your first listing.")}
+                    </Empty>
                   )}
                 </>
               )}
@@ -1477,28 +1553,29 @@ export default function App() {
                   <div className="section-heading">
                     <div>
                       <h1 className="page-title">
-                        Your agent. Your boundaries.
+                        {tr("Your agent. Your boundaries.")}
                       </h1>
                       <p>
-                        Private limits guide negotiation. They never authorize a
-                        final sale.
+                        {tr(
+                          "Private limits guide negotiation. They never authorize a final sale.",
+                        )}
                       </p>
                     </div>
                     <Badge>
                       <ShieldCheck size={12} />
-                      Private to your workspace
+                      {tr("Private to your workspace")}
                     </Badge>
                   </div>
                   <section className="panel settings">
                     <form onSubmit={(e) => submit(e, "/policy")}>
-                      <h3>Negotiation policy</h3>
+                      <h3>{tr("Negotiation policy")}</h3>
                       <p className="muted">
-                        Your agent cannot exceed these hard limits.
+                        {tr("Your agent cannot exceed these hard limits.")}
                       </p>
                       <div className="form-grid">
                         {farmer ? (
                           <Field
-                            label="Minimum selling price (₹ / kg)"
+                            label={tr("Minimum selling price (₹ / kg)")}
                             name="min_price"
                             type="number"
                             value={policy.min_price}
@@ -1506,13 +1583,13 @@ export default function App() {
                         ) : (
                           <>
                             <Field
-                              label="Maximum purchase price (₹ / kg)"
+                              label={tr("Maximum purchase price (₹ / kg)")}
                               name="max_price"
                               type="number"
                               value={policy.max_price}
                             />
                             <Field
-                              label="Maximum order budget (₹)"
+                              label={tr("Maximum order budget (₹)")}
                               name="max_budget"
                               type="number"
                               value={policy.max_budget}
@@ -1530,7 +1607,7 @@ export default function App() {
                           value={policy.quantity || 40}
                         />
                         <Field
-                          label="Service radius (km)"
+                          label={tr("Service radius (km)")}
                           name="radius_km"
                           type="number"
                           value={policy.radius_km || 50}
@@ -1538,24 +1615,28 @@ export default function App() {
                       </div>
                       <button disabled={busy} className="button">
                         <Check size={17} />
-                        Save my limits
+                        {tr("Save my limits")}
                       </button>
                     </form>
                     <div className="settings-explainer">
                       <Sparkles size={28} />
-                      <h3>Assistance with a clear boundary.</h3>
+                      <h3>{tr("Assistance with a clear boundary.")}</h3>
                       <p>
-                        Negotiation uses{" "}
-                        {typeof state?.mode === "object" &&
-                        state.mode.negotiation === "openai"
-                          ? "AI proposals with server-side validation"
-                          : "a bounded local rule-based engine"}
-                        . It compares eligible terms without disclosing private
-                        limits.
+                        {tr("Negotiation uses")}{" "}
+                        {tr(
+                          typeof state?.mode === "object" &&
+                            state.mode.negotiation === "openai"
+                            ? "AI proposals with server-side validation"
+                            : "a bounded local rule-based engine",
+                        )}
+                        {tr(
+                          ". It compares eligible terms without disclosing private limits.",
+                        )}
                       </p>
                       <p>
-                        The farmer selects the buyer. The buyer confirms the
-                        agreement. No real funds move.
+                        {tr(
+                          "The farmer selects the buyer. The buyer confirms the agreement. No real funds move.",
+                        )}
                       </p>
                     </div>
                   </section>
@@ -1564,15 +1645,17 @@ export default function App() {
               <footer>
                 <span>
                   <Sprout size={14} />
-                  HarvestLink · Built for better connections
+                  {tr("HarvestLink · Built for better connections")}
                 </span>
                 <span>
-                  Synthetic demo data ·{" "}
-                  {typeof state?.mode === "object" &&
-                  state.mode.negotiation === "openai"
-                    ? "AI-assisted negotiation"
-                    : "Rule-based negotiation"}{" "}
-                  · Simulated payments
+                  {tr("Synthetic demo data ·")}{" "}
+                  {tr(
+                    typeof state?.mode === "object" &&
+                      state.mode.negotiation === "openai"
+                      ? "AI-assisted negotiation"
+                      : "Rule-based negotiation",
+                  )}{" "}
+                  {tr("· Simulated payments")}
                 </span>
               </footer>
             </>
@@ -1592,7 +1675,7 @@ export default function App() {
           >
             <button
               className="modal-close icon-button"
-              aria-label="Close dialog"
+              aria-label={tr("Close dialog")}
               disabled={busy}
               onClick={() => setModal("")}
             >
@@ -1600,11 +1683,18 @@ export default function App() {
             </button>
             {modal === "request" && requestLot && (
               <>
-                <div className="eyebrow">BUYER-APPROVED REQUIREMENT</div>
-                <h2>Request {requestLot.crop}.</h2>
+                <div className="eyebrow">
+                  {tr("BUYER-APPROVED REQUIREMENT")}
+                </div>
+                <h2>
+                  {tr("Request")}
+                  {requestLot.crop}
+                  {tr(".")}
+                </h2>
                 <p className="muted">
-                  Choose a quantity within your budget. This creates a
-                  provisional requirement, not a purchase.
+                  {tr(
+                    "Choose a quantity within your budget. This creates a provisional requirement, not a purchase.",
+                  )}
                 </p>
                 <form
                   onSubmit={(e) => {
@@ -1620,7 +1710,7 @@ export default function App() {
                   }}
                 >
                   <Field
-                    label="Requested quantity (kg)"
+                    label={tr("Requested quantity (kg)")}
                     name="quantity"
                     type="number"
                     value={
@@ -1630,7 +1720,7 @@ export default function App() {
                     }
                   />
                   <button className="button full" disabled={busy}>
-                    Approve purchase requirement
+                    {tr("Approve purchase requirement")}
                     <ArrowRight size={16} />
                   </button>
                 </form>
@@ -1638,43 +1728,49 @@ export default function App() {
             )}
             {modal === "lot" && (
               <>
-                <div className="eyebrow">FROM YOUR FIELDS</div>
-                <h2>List your next harvest.</h2>
+                <div className="eyebrow">{tr("FROM YOUR FIELDS")}</div>
+                <h2>{tr("List your next harvest.")}</h2>
                 <p className="muted">
-                  Give buyers the details they need to make a clear offer.
+                  {tr(
+                    "Give buyers the details they need to make a clear offer.",
+                  )}
                 </p>
                 <form onSubmit={(e) => submit(e, "/lots")}>
                   <div className="form-grid">
-                    <Field label="Crop" name="crop" value="Tomato" />
-                    <Field label="Variety" name="variety" value="Local" />
-                    <Field label="Declared grade" name="grade" value="A" />
+                    <Field label={tr("Crop")} name="crop" value="Tomato" />
+                    <Field label={tr("Variety")} name="variety" value="Local" />
                     <Field
-                      label="Quantity (kg)"
+                      label={tr("Declared grade")}
+                      name="grade"
+                      value="A"
+                    />
+                    <Field
+                      label={tr("Quantity (kg)")}
                       name="quantity"
                       type="number"
                       value={100}
                     />
                     <Field
-                      label="Asking price (₹ / kg)"
+                      label={tr("Asking price (₹ / kg)")}
                       name="ask_price"
                       type="number"
                       value={30}
                     />
                     <Field
-                      label="Harvest date"
+                      label={tr("Harvest date")}
                       name="harvest_date"
                       type="date"
                       value={new Date().toISOString().slice(0, 10)}
                     />
                     <Field
-                      label="Available from"
+                      label={tr("Available from")}
                       name="available_date"
                       type="date"
                       value={new Date().toISOString().slice(0, 10)}
                     />
                   </div>
                   <button className="button full" disabled={busy}>
-                    Publish harvest
+                    {tr("Publish harvest")}
                     <ArrowRight size={17} />
                   </button>
                 </form>
@@ -1682,32 +1778,36 @@ export default function App() {
             )}
             {modal === "profile" && (
               <>
-                <h2>Make it your workspace.</h2>
+                <h2>{tr("Make it your workspace.")}</h2>
                 <form onSubmit={(e) => submit(e, "/profile")}>
                   <Field
-                    label="Your display name"
+                    label={tr("Your display name")}
                     name="name"
                     value={profile.name}
                   />
                   <Field
-                    label="Location"
+                    label={tr("Location")}
                     name="location"
                     value={profile.location || "Mangaluru"}
                   />
                   <button className="button full" disabled={busy}>
-                    Save profile
+                    {tr("Save profile")}
                   </button>
                 </form>
               </>
             )}
             {modal === "import" && (
               <>
-                <div className="eyebrow">A SIMPLE START</div>
-                <h2>Import {importKind} data.</h2>
+                <div className="eyebrow">{tr("A SIMPLE START")}</div>
+                <h2>
+                  {tr("Import")}
+                  {importKind}
+                  {tr("data.")}
+                </h2>
                 <p className="muted">
-                  Use the template columns. Your file is validated before
-                  records are added. Inventory imports append batches;
-                  consumption imports reject duplicate dates.
+                  {tr(
+                    "Use the template columns. Your file is validated before records are added. Inventory imports append batches; consumption imports reject duplicate dates.",
+                  )}
                 </p>
                 <div className="import-tabs">
                   {(farmer ? ["harvest"] : ["inventory", "consumption"]).map(
@@ -1731,12 +1831,12 @@ export default function App() {
                   download
                 >
                   <ArrowDownToLine size={16} />
-                  Download CSV template
+                  {tr("Download CSV template")}
                 </a>
                 <label className="upload-zone">
                   <Upload size={26} />
-                  <strong>Choose a CSV file</strong>
-                  <span>Or paste your CSV below</span>
+                  <strong>{tr("Choose a CSV file")}</strong>
+                  <span>{tr("Or paste your CSV below")}</span>
                   <input
                     type="file"
                     accept=".csv,text/csv"
@@ -1753,14 +1853,16 @@ export default function App() {
                       checked={replaceImport}
                       onChange={(e) => setReplaceImport(e.target.checked)}
                     />
-                    Replace this workspace’s existing {importKind} records
+                    {tr("Replace this workspace’s existing")}
+                    {importKind}
+                    {tr("records")}
                   </label>
                 )}
                 <textarea
-                  aria-label="CSV contents"
+                  aria-label={tr("CSV contents")}
                   value={csv}
                   onChange={(e) => setCsv(e.target.value)}
-                  placeholder="Paste CSV with header row…"
+                  placeholder={tr("Paste CSV with header row…")}
                   rows={5}
                 />
                 <button
@@ -1774,7 +1876,7 @@ export default function App() {
                     )
                   }
                 >
-                  Validate & import
+                  {tr("Validate & import")}
                   <ArrowRight size={17} />
                 </button>
               </>
@@ -1782,10 +1884,11 @@ export default function App() {
             {modal === "reset" && (
               <>
                 <RefreshCw size={30} />
-                <h2>A fresh start for the demo?</h2>
+                <h2>{tr("A fresh start for the demo?")}</h2>
                 <p>
-                  This resets listings, requirements, orders and policies to the
-                  original sample data.
+                  {tr(
+                    "This resets listings, requirements, orders and policies to the original sample data.",
+                  )}
                 </p>
                 <button
                   className="button full"
@@ -1794,23 +1897,24 @@ export default function App() {
                     action("/reset", {}, "Demo reset to its starting state")
                   }
                 >
-                  Reset demo data
+                  {tr("Reset demo data")}
                 </button>
               </>
             )}
             {error && (
               <div className="alert error" role="alert">
-                {error}
+                {tr(error)}
               </div>
             )}
             {busy && (
               <p role="status" className="muted">
-                {busyText}
+                {tr(busyText)}
               </p>
             )}
           </section>
         </div>
       )}
+      {farmer && <Assistant />}
     </div>
   );
 }
@@ -1825,14 +1929,15 @@ function Metric({
   note: string;
   icon: ReactNode;
 }) {
+  const { tr } = useLocale();
   return (
     <article className="metric">
       <div>
-        <span>{title}</span>
+        <span>{tr(title)}</span>
         {icon}
       </div>
       <strong>{value}</strong>
-      <p>{note}</p>
+      <p>{tr(note)}</p>
     </article>
   );
 }

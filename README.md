@@ -156,7 +156,7 @@ flowchart LR
 
 The frontend pairs forest-green and warm cream surfaces with editorial typography and original SVG produce illustrations. Its panoramic farm includes crop beds, an orchard, greenhouse and collection tractor, built with React, TypeScript, Vite and React Three Fiber. The scene is lazy-loaded, honours reduced-motion preference and has a WebGL fallback. Charts and forms remain usable independently of 3D.
 
-SQLite transactions protect reservations and state transitions. Model inference and external requests happen outside write transactions, with state checks before results are committed. Participant projections hide other buyers’ budgets and inventory; **the role selector is a local demonstration mechanism, not production authentication**.
+SQLite transactions protect reservations and state transitions. Model inference and external requests happen outside write transactions, with state checks before results are committed. Participant projections hide other buyers’ budgets and inventory; **four password-protected demo accounts use scoped server sessions; these are not production customer identities**.
 
 ## Verification
 
@@ -175,7 +175,7 @@ The backend suite covers private projections, atomic imports/replacements, inval
 
 ## What this prototype does not claim
 
-- Real accounts, production tenant security, verified farmers or authenticated role switching.
+- Production customer registration, verified farmers and production tenant infrastructure.
 - Real-money escrow, production payments, automatic refunds or carrier integrations.
 - Live GPS routing: restaurant distances are seeded, illustrative values.
 - Guaranteed lower buyer prices, higher farmer incomes, calibrated spoilage estimates or real-world forecasting accuracy.
@@ -184,3 +184,24 @@ The backend suite covers private projections, atomic imports/replacements, inval
 The current demo selects one buyer per active lot agreement. Additional stock can be traded after that agreement completes. Multi-winner allocation, actual logistics and production authentication are future work.
 
 The build milestones, decisions, fixes and verification history live in [plan.md](plan.md).
+
+## A welcome in your language
+
+Start at the animated agricultural landing page, then sign in to one participant's workspace. First login asks for a farm/restaurant name and location. The farmer workspace focuses on selling; the blue restaurant workspace focuses on inventory and purchasing.
+
+| Demo account | Username | Password |
+| --- | --- | --- |
+| Farmer | `farmer` | `Harvest@123` |
+| The Green Table | `restaurant1` | `Harvest@123` |
+| Coastal Kitchen | `restaurant2` | `Harvest@123` |
+| Roots & Grains | `restaurant3` | `Harvest@123` |
+
+These are public, separate hackathon accounts with server-validated sessions. Sign out before changing participant. They are not production customer credentials.
+
+Choose English or ten Indian languages from the language menu. **Madhu**, the farmer's honeybee guide adapted from Inception, answers app questions in the selected language. Tap **Listen in my language** for Sarvam speech. Standard interface translations are bundled, and dynamic messages are translated on demand; service failures are shown explicitly. Native-speaker review is still needed before real-world rollout.
+
+Set `SARVAM_API_KEY` only in the ignored root `.env` for voice; the existing `OPENAI_API_KEY` powers answers and dynamic translation. Keys never enter the browser bundle. Speech is requested only when the user taps Listen. The assistant explains actions but never accepts an offer or moves money.
+
+![Animated agricultural entrance](docs/images/landing.png)
+![Simple account sign-in](docs/images/sign-in.png)
+![Madhu farmer guide](docs/images/farmer-assistant.png)
