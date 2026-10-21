@@ -5,6 +5,7 @@ test("landing sign-in onboarding, separate buyer workspace and logout", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "Enter your workspace" }).click();
+  await page.getByLabel("I’m a buyer", {exact:false}).check();
   await page.getByLabel("Username", { exact: true }).fill("restaurant2");
   await page.getByLabel("Password", { exact: true }).fill("wrong");
   await page

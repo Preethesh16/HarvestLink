@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, lazy, Suspense } from "react";
+import { useEffect, useState, useRef } from "react";
 import type { FormEvent, ReactNode } from "react";
 import {
   ArrowDownToLine,
@@ -25,8 +25,8 @@ import {
 } from "lucide-react";
 import { useLocale } from "./Locale";
 import Assistant from "./Assistant";
+import CropPlanner from "./CropPlanner";
 import ProduceArt from "./ProduceArt";
-const Farm = lazy(() => import("./Farm"));
 type Row = Record<string, any>;
 type State = {
   actor: string;
@@ -277,6 +277,7 @@ export default function App({ initialActor }: { initialActor: string }) {
   const forecast: Row = Array.isArray(fs)
     ? fs.find((f) => !f.actor || f.actor === actor) || fs[0] || {}
     : fs?.[actor] || fs || {};
+  const hasForecast = [forecast.daily,forecast.predictions,forecast.forecast,forecast.points].some(rows=>Array.isArray(rows)&&rows.length>0);
   const inventory = state?.inventory || [];
   const available = lots.reduce(
     (s, l) =>
@@ -297,11 +298,17 @@ export default function App({ initialActor }: { initialActor: string }) {
       forecast.reorder_quantity ??
       forecast.suggested_quantity ??
       forecast.purchase_quantity ??
-      policy.quantity ??
-      40,
+      0,
   );
   const tabs = farmer
-    ? ["Overview", "My harvest", "Negotiations", "Orders", "Agent settings"]
+    ? [
+        "Overview",
+        "My harvest",
+        "What to grow next",
+        "Negotiations",
+        "Orders",
+        "Agent settings",
+      ]
     : [
         "Overview",
         "Inventory & forecast",
@@ -787,95 +794,112 @@ export default function App({ initialActor }: { initialActor: string }) {
             {tr("Run forecast")}
           </button>
         </div>
-        <div className="forecast-grid">
-          <section className="panel forecast">
-            <div className="panel-heading">
-              <h3>{tr("Seven-day consumption outlook")}</h3>
-              <Badge tone="neutral">
-                {pretty(forecast.model || forecast.method || "Baseline demo")}
-              </Badge>
-            </div>
-            <div className="chart">
-              {(values.length
-                ? values
-                : Array.from({ length: 7 }, (_, i) => ({
-                    value: 0,
-                    date: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][i],
-                  }))
-              ).map((v: any, i: number) => {
-                const n = Number(
-                  typeof v === "number"
-                    ? v
-                    : (v.consumption ??
-                        v.predicted ??
-                        v.prediction ??
-                        v.value ??
-                        v.mean ??
-                        v.demand ??
-                        0),
-                );
-                return (
-                  <div className="bar-column" key={i}>
-                    <span>{n.toFixed(1)}</span>
-                    <div
-                      className="bar"
-                      style={{
-                        height: `${Math.max(3, Math.min(145, n * 6))}px`,
-                      }}
-                    />
-                    <small>
-                      {typeof v === "object"
-                        ? String(v.date || v.day || `Day ${i + 1}`).slice(-5)
-                        : `D${i + 1}`}
-                    </small>
-                  </div>
-                );
-              })}
-            </div>
-            <p className="caption">
-              {forecast.assumptions ||
-                "Projected consumption in kg · Synthetic demo history. Shelf-life estimates are not safety guarantees."}
-            </p>
-          </section>
-          <section className="reorder-card">
-            <span className="circle-icon">
-              <Package size={22} />
-            </span>
-            <div className="eyebrow">{tr("SUGGESTED REPLENISHMENT")}</div>
-            <h2>
-              {suggestion}
-              <span> {tr("kg")}</span>
-            </h2>
+        {!hasForecast && (
+          <div className="empty-forecast" role="status">
+            <BarChart3 size={24} />
+            <h3>{tr("Run a forecast to plan your purchase.")}</h3>
             <p>
-              {tr("Projected shortage:")}{" "}
-              <strong>
-                {forecast.shortage_date || "No shortage projected"}
-              </strong>
-              <br />
-              {tr("Order by:")}{" "}
-              <strong>{forecast.order_by || "Review forecast"}</strong>
-              <br />
-              {tr("Expected unusable stock:")}{" "}
-              <strong>
-                {forecast.expected_waste ?? 0} {tr("kg")}
-              </strong>
+              {tr(
+                "We have not calculated demand for this inventory yet. Add consumption history, then run the forecast. You can still create a manual request from Marketplace.",
+              )}
             </p>
-            <button
-              className="button light"
-              disabled={busy || !lots.length}
-              onClick={() =>
-                action(
-                  "/requirements",
-                  { lot_id: lots[0]?.id, quantity: suggestion },
-                  "Purchase requirement approved",
-                )
-              }
-            >
-              {tr("Create purchase request")}
-              <ArrowRight size={16} />
-            </button>
-          </section>
-        </div>
+          </div>
+        )}
+        {hasForecast && (
+          <div className="forecast-grid">
+            <section className="panel forecast">
+              <div className="panel-heading">
+                <h3>{tr("Seven-day consumption outlook")}</h3>
+                <Badge tone="neutral">
+                  {pretty(forecast.model || forecast.method || "Baseline demo")}
+                </Badge>
+              </div>
+              <div className="chart">
+                {(values.length
+                  ? values
+                  : Array.from({ length: 7 }, (_, i) => ({
+                      value: 0,
+                      date: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"][
+                        i
+                      ],
+                    }))
+                ).map((v: any, i: number) => {
+                  const n = Number(
+                    typeof v === "number"
+                      ? v
+                      : (v.consumption ??
+                          v.predicted ??
+                          v.prediction ??
+                          v.value ??
+                          v.mean ??
+                          v.demand ??
+                          0),
+                  );
+                  return (
+                    <div className="bar-column" key={i}>
+                      <span>{n.toFixed(1)}</span>
+                      <div
+                        className="bar"
+                        style={{
+                          height: `${Math.max(3, Math.min(145, n * 6))}px`,
+                        }}
+                      />
+                      <small>
+                        {typeof v === "object"
+                          ? String(v.date || v.day || `Day ${i + 1}`).slice(-5)
+                          : `D${i + 1}`}
+                      </small>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="caption">
+                {forecast.assumptions ||
+                  "Projected consumption in kg · Synthetic demo history. Shelf-life estimates are not safety guarantees."}
+              </p>
+            </section>
+            <section className="reorder-card">
+              <span className="circle-icon">
+                <Package size={22} />
+              </span>
+              <div className="eyebrow">{tr("SUGGESTED REPLENISHMENT")}</div>
+              <h2>
+                {suggestion}
+                <span> {tr("kg")}</span>
+              </h2>
+              <p>
+                {tr("Projected shortage:")}{" "}
+                <strong>
+                  {forecast.shortage_date || "No shortage projected"}
+                </strong>
+                <br />
+                {tr("Order by:")}{" "}
+                <strong>{forecast.order_by || "Review forecast"}</strong>
+                <br />
+                {tr("Expected unusable stock:")}{" "}
+                <strong>
+                  {forecast.expected_waste ?? 0} {tr("kg")}
+                </strong>
+              </p>
+              <button
+                className="button light"
+                disabled={
+                  busy || !lots.length || !hasForecast || suggestion <= 0
+                }
+                onClick={() =>
+                  action(
+                    "/requirements",
+                    { lot_id: lots[0]?.id, quantity: suggestion },
+                    "Purchase requirement approved",
+                  )
+                }
+              >
+                {tr("Create purchase request")}
+                <ArrowRight size={16} />
+              </button>
+            </section>
+          </div>
+        )}
         {forecast.evaluation && (
           <section className="panel">
             <h3>{tr("Forecast evaluation")}</h3>
@@ -1144,6 +1168,11 @@ export default function App({ initialActor }: { initialActor: string }) {
             </div>
           ) : (
             <>
+              {farmer && page === "What to grow next" && (
+                <CropPlanner
+                  location={profile.location || "Bantwal, Karnataka"}
+                />
+              )}
               {page === "Overview" && (
                 <>
                   <section className="hero">
@@ -1200,15 +1229,7 @@ export default function App({ initialActor }: { initialActor: string }) {
                         </button>
                       </div>
                     </div>
-                    <Suspense
-                      fallback={
-                        <div className="farm-scene">
-                          {tr("Loading farm illustration…")}
-                        </div>
-                      }
-                    >
-                      <Farm />
-                    </Suspense>
+
                     <div className="farm-stat">
                       <span className="farm-stat-icon">
                         <Sprout size={20} />
@@ -1280,7 +1301,9 @@ export default function App({ initialActor }: { initialActor: string }) {
                           ? market?.modal_price != null
                             ? money(market.modal_price)
                             : "Reported prices"
-                          : `${suggestion} kg`
+                          : hasForecast
+                            ? `${suggestion} kg`
+                            : "—"
                       }
                       note={
                         farmer
@@ -1715,7 +1738,9 @@ export default function App({ initialActor }: { initialActor: string }) {
                     type="number"
                     value={
                       String(requestLot.crop).toLowerCase() === "tomato"
-                        ? suggestion
+                        ? hasForecast
+                          ? suggestion
+                          : Number(policy.quantity || 1)
                         : policy.quantity || 10
                     }
                   />

@@ -1119,3 +1119,111 @@
     filter: none;
   }
 }
+
+/* Explicit manipulation remains enabled even when decorative motion is reduced. */
+.welcome-scene .farm-scene,
+.welcome-access-scene .farm-scene {
+  pointer-events: auto;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
+}
+.farm-scene.is-dragging {
+  cursor: grabbing;
+}
+.farm-scene:focus-visible {
+  outline: 2px solid #dceaa8;
+  outline-offset: -6px;
+  border-radius: 20px;
+}
+.farm-controls {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 10px;
+  border: 1px solid #9eae8055;
+  background: #183b2bed;
+  border-radius: 30px;
+  color: #f5f5e8;
+  white-space: nowrap;
+  z-index: 4;
+  font: 12px sans-serif;
+  cursor: default;
+}
+.farm-controls span {
+  padding: 0 9px;
+}
+.farm-controls button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #dceaa8;
+  color: #173b28;
+  font-size: 20px;
+  cursor: pointer;
+}
+.farm-controls button:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+@media (max-width: 700px) {
+  .welcome .welcome-scene {
+    pointer-events: auto;
+  }
+  .farm-controls {
+    bottom: 5px;
+  }
+  .farm-controls span {
+    font-size: 11px;
+  }
+}
+.login-role-choice {
+  border: 0;
+  padding: 0;
+  margin: 20px 0 26px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.login-role-choice legend {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.login-role-choice label {
+  position: relative;
+  padding: 18px 12px;
+  border: 1px solid #ced8be;
+  border-radius: 12px;
+  display: grid;
+  gap: 8px;
+  cursor: pointer;
+  background: #fffef5;
+}
+.login-role-choice label.selected {
+  background: #e9f0d8;
+  border: 2px solid #547445;
+  padding: 17px 11px;
+}
+.login-role-choice input {
+  position: absolute;
+  right: 12px;
+  top: 15px;
+  accent-color: #315b39;
+}
+.login-role-choice strong {
+  font-size: 14px;
+}
+.login-role-choice small {
+  font-size: 12px;
+  color: #516846;
+}
+.login-role-choice label:focus-within {
+  outline: 2px solid #657d42;
+  outline-offset: 3px;
+}

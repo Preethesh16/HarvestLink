@@ -205,3 +205,9 @@ Set `SARVAM_API_KEY` only in the ignored root `.env` for voice; the existing `OP
 ![Animated agricultural entrance](docs/images/landing.png)
 ![Simple account sign-in](docs/images/sign-in.png)
 ![Madhu farmer guide](docs/images/farmer-assistant.png)
+
+## What to grow next
+
+Farmers can open **What to grow next**, enter a location, planned planting date, water availability and previous crop, and get an explained seasonal shortlist. Cards show a planning harvest date, rotation cautions and aggregate demand evidence from demo kitchens. Unknown demand stays unknown. The demand range is a repeat-usage scenario, not a confirmed order, probability interval or yield/profit promise. Crop timing and broad season categories are explicit demo assumptions; confirm local suitability with an agricultural officer.
+
+Sign-in now starts with **I’m a farmer** or **I’m a buyer**. Selecting a role never grants access to another account. Drag the landing-page farm to rotate it; keyboard users can focus it and use arrows or Home. Idle motion stops under the reduced-motion preference.

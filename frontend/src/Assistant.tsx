@@ -14,6 +14,8 @@ export default function Assistant() {
   const revision = useRef(0);
   const voiceRevision = useRef(0);
   const input = useRef<HTMLInputElement>(null);
+  const toggle = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
   useEffect(() => {
     revision.current++;
     voiceRevision.current++;
@@ -33,10 +35,12 @@ export default function Assistant() {
   useEffect(() => {
     if (open) input.current?.focus();
     else {
+      if (wasOpen.current) toggle.current?.focus();
       voiceRevision.current++;
       audio.current?.pause();
       setSpeaking(false);
     }
+    wasOpen.current = open;
     const escape = (event: KeyboardEvent) => {
       if (event.key === "Escape") setOpen(false);
     };
@@ -170,6 +174,7 @@ export default function Assistant() {
         </section>
       )}
       <button
+        ref={toggle}
         className="bee-toggle"
         aria-label={tr("Ask Madhu, your farmer assistant")}
         aria-expanded={open}

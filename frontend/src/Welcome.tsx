@@ -24,6 +24,7 @@ export default function Welcome({ onLogin, t }: Props) {
     "landing",
   );
   const [actor, setActor] = useState("");
+  const [accountRole, setAccountRole] = useState<"farmer" | "buyer" | "">("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [visiblePassword, setVisiblePassword] = useState(false);
@@ -57,7 +58,7 @@ export default function Welcome({ onLogin, t }: Props) {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, role: accountRole }),
       });
       const data = await response.json();
       if (!response.ok)
@@ -147,7 +148,7 @@ export default function Welcome({ onLogin, t }: Props) {
           <div className="welcome-grain" aria-hidden="true" />
           <div className="welcome-orbit orbit-one" aria-hidden="true" />
           <div className="welcome-orbit orbit-two" aria-hidden="true" />
-          <div className="welcome-scene" aria-hidden="true">
+          <div className="welcome-scene">
             <Suspense
               fallback={
                 <div className="welcome-scene-placeholder">
@@ -228,7 +229,7 @@ export default function Welcome({ onLogin, t }: Props) {
                 "One connected network. A private workspace for every grower and every kitchen.",
               )}
             </p>
-            <div className="welcome-access-scene" aria-hidden="true">
+            <div className="welcome-access-scene">
               <Suspense fallback={<Sprout size={60} />}>
                 <Farm />
               </Suspense>
@@ -270,7 +271,11 @@ export default function Welcome({ onLogin, t }: Props) {
               <p className="welcome-form-intro">
                 {t(
                   stage === "login"
-                    ? "Sign in to your own farm or restaurant workspace."
+                    ? accountRole === "farmer"
+                      ? "Sign in to sell your harvest."
+                      : accountRole === "buyer"
+                        ? "Sign in to stock your kitchen."
+                        : "Choose farmer or buyer, then sign in."
                     : "Two details to help your trading partners know you.",
                 )}
               </p>
@@ -287,6 +292,47 @@ export default function Welcome({ onLogin, t }: Props) {
               )}
               {stage === "login" ? (
                 <form onSubmit={login}>
+                  <fieldset className="login-role-choice" disabled={busy}>
+                    <legend>{t("How will you use HarvestLink?")}</legend>
+                    {(
+                      [
+                        ["farmer", "I’m a farmer"],
+                        ["buyer", "I’m a buyer"],
+                      ] as const
+                    ).map(([role, label]) => (
+                      <label
+                        key={role}
+                        className={accountRole === role ? "selected" : ""}
+                      >
+                        <input
+                          type="radio"
+                          name="account-role"
+                          value={role}
+                          checked={accountRole === role}
+                          required
+                          onChange={() => {
+                            setAccountRole(role);
+                            setUsername("");
+                            setPassword("");
+                            setError("");
+                          }}
+                        />
+                        {role === "farmer" ? (
+                          <Sprout size={22} />
+                        ) : (
+                          <Store size={22} />
+                        )}
+                        <strong>{t(label)}</strong>
+                        <small>
+                          {t(
+                            role === "farmer"
+                              ? "Sell my harvest"
+                              : "Buy for my kitchen",
+                          )}
+                        </small>
+                      </label>
+                    ))}
+                  </fieldset>
                   <label className="welcome-field">
                     {t("Username")}
                     <input
@@ -350,7 +396,7 @@ export default function Welcome({ onLogin, t }: Props) {
                       )}
                       required
                       minLength={2}
-                      maxLength={100}
+                      maxLength={80}
                       disabled={busy}
                     />
                   </label>
@@ -394,28 +440,39 @@ export default function Welcome({ onLogin, t }: Props) {
                       ["restaurant1", "Restaurant 1"],
                       ["restaurant2", "Restaurant 2"],
                       ["restaurant3", "Restaurant 3"],
-                    ].map(([user, label]) => (
-                      <button
-                        key={user}
-                        type="button"
-                        disabled={busy}
-                        onClick={() => {
-                          setUsername(user);
-                          setPassword("Harvest@123");
-                        }}
-                      >
-                        {user === "farmer" ? (
-                          <Sprout size={16} />
-                        ) : (
-                          <Store size={16} />
-                        )}
-                        <span>
-                          {t(label)}
-                          <small>{user}</small>
-                        </span>
-                        <ArrowUpRight size={14} />
-                      </button>
-                    ))}
+                    ]
+                      .filter(
+                        ([user]) =>
+                          !accountRole ||
+                          (accountRole === "farmer"
+                            ? user === "farmer"
+                            : user !== "farmer"),
+                      )
+                      .map(([user, label]) => (
+                        <button
+                          key={user}
+                          type="button"
+                          disabled={busy}
+                          onClick={() => {
+                            setAccountRole(
+                              user === "farmer" ? "farmer" : "buyer",
+                            );
+                            setUsername(user);
+                            setPassword("Harvest@123");
+                          }}
+                        >
+                          {user === "farmer" ? (
+                            <Sprout size={16} />
+                          ) : (
+                            <Store size={16} />
+                          )}
+                          <span>
+                            {t(label)}
+                            <small>{user}</small>
+                          </span>
+                          <ArrowUpRight size={14} />
+                        </button>
+                      ))}
                   </div>
                   <p>
                     {t("Demo password:")} <code>Harvest@123</code>

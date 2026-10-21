@@ -577,6 +577,13 @@ def login(payload: Payload, request: Request, response: Response):
         raise HTTPException(
             401, "Check your username and password, or wait a minute before trying again."
         )
+    role = data.get("role")
+    actual_role = "farmer" if identity.ACCOUNTS[username] == "farmer" else "buyer"
+    if role is not None and role != actual_role:
+        identity.SESSIONS.pop(token, None)
+        raise HTTPException(
+            403, "This account belongs to a different role. Choose farmer or buyer correctly."
+        )
     response.set_cookie(
         "harvest_session",
         token,
@@ -648,3 +655,12 @@ def assistant_speech(payload: Payload):
     if not 1 <= len(text) <= 2400:
         raise ValueError("Speech text must contain 1–2,400 characters.")
     return {"audio": assistance.speech(text, data.get("language", "en-IN")), "mime": "audio/wav"}
+
+
+@app.post("/api/crop-plan")
+def plan_crops(payload: Payload, x_actor: str = Header(default="farmer")):
+    from backend.planning import crop_plan
+
+    guard(actor_id(x_actor), "farmer")
+    _, s = read()
+    return crop_plan(s, payload.model_dump())

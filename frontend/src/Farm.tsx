@@ -1,3 +1,4 @@
+import { useLocale } from "./Locale";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Component,
@@ -200,20 +201,35 @@ function Tractor() {
     </group>
   );
 }
-function Scene({ still }: { still: boolean }) {
+function Scene({
+  still,
+  rotation,
+  dragging,
+}: {
+  still: boolean;
+  rotation: [number, number];
+  dragging: boolean;
+}) {
   const ref = useRef<Group>(null);
   const shape = useMemo(() => roundedPlot(8.1, 5.8, 0.65), []);
-  useFrame(({ clock, pointer }, delta) => {
+  const drift = useRef(0);
+  useEffect(() => { if (rotation[0] === 0 && rotation[1] === 0) drift.current = 0; }, [rotation]);
+  useFrame((_, delta) => {
+    if (!still && !dragging) drift.current += Math.min(delta, 0.05) * 0.018;
     if (ref.current && !still) {
+      ref.current.rotation.x +=
+        (rotation[0] - ref.current.rotation.x) * Math.min(1, delta * 9);
       ref.current.rotation.y +=
-        (pointer.x * 0.09 +
-          Math.sin(clock.elapsedTime * 0.12) * 0.025 -
-          ref.current.rotation.y) *
-        Math.min(1, delta * 2);
+        (rotation[1] + drift.current - ref.current.rotation.y) *
+        Math.min(1, delta * 9);
     }
   });
   return (
-    <group ref={ref} position={[0, -0.3, 0]}>
+    <group
+      ref={ref}
+      position={[0, -0.3, 0]}
+      rotation={still ? [rotation[0], rotation[1], 0] : undefined}
+    >
       <ambientLight intensity={1.5} />
       <hemisphereLight args={["#fff3ce", "#3f6544", 1.3]} />
       <directionalLight
@@ -389,6 +405,19 @@ class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   }
 }
 export default function Farm() {
+  const { tr } = useLocale();
+  const [rotation, setRotation] = useState<[number, number]>([0, 0]);
+  const drag = useRef<{
+    id: number;
+    x: number;
+    y: number;
+    rotation: [number, number];
+  } | null>(null);
+  const [dragging, setDragging] = useState(false);
+  const clamp = (v: number) => Math.max(-0.3, Math.min(0.3, v));
+  const turn = (dx: number, dy = 0) =>
+    setRotation(([pitch, yaw]) => [clamp(pitch + dy), yaw + dx]);
+
   const [ready, setReady] = useState(false);
   const [still, setStill] = useState(true);
   useEffect(() => {
@@ -406,9 +435,70 @@ export default function Farm() {
   }, []);
   return (
     <div
-      className="farm-scene"
-      role="img"
-      aria-label="Interactive agricultural landscape with crop rows, a farmhouse, greenhouse and collection tractor"
+      role="region"
+      tabIndex={0}
+      aria-label={tr(
+        "Interactive farm. Drag to rotate, or use arrow keys. Press Home to reset.",
+      )}
+      data-yaw={rotation[1].toFixed(3)}
+      data-pitch={rotation[0].toFixed(3)}
+      className={`farm-scene ${dragging ? "is-dragging" : ""}`}
+      onKeyDown={(e) => {
+        if (e.target !== e.currentTarget) return;
+        if (
+          ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home"].includes(
+            e.key,
+          )
+        ) {
+          e.preventDefault();
+          if (e.key === "Home") setRotation([0, 0]);
+          else
+            turn(
+              e.key === "ArrowLeft" ? -0.18 : e.key === "ArrowRight" ? 0.18 : 0,
+              e.key === "ArrowUp" ? -0.06 : e.key === "ArrowDown" ? 0.06 : 0,
+            );
+        }
+      }}
+      onPointerDown={(e) => {
+        if (
+          (e.target as HTMLElement).closest("button") ||
+          !ready ||
+          e.button !== 0
+        )
+          return;
+        drag.current = {
+          id: e.pointerId,
+          x: e.clientX,
+          y: e.clientY,
+          rotation,
+        };
+        e.currentTarget.setPointerCapture(e.pointerId);
+        setDragging(true);
+      }}
+      onPointerMove={(e) => {
+        const d = drag.current;
+        if (!d || d.id !== e.pointerId) return;
+        setRotation([
+          clamp(d.rotation[0] + (e.clientY - d.y) * 0.003),
+          d.rotation[1] + (e.clientX - d.x) * 0.008,
+        ]);
+      }}
+      onPointerUp={(e) => {
+        if (drag.current?.id === e.pointerId) {
+          drag.current = null;
+          setDragging(false);
+          if (e.currentTarget.hasPointerCapture(e.pointerId))
+            e.currentTarget.releasePointerCapture(e.pointerId);
+        }
+      }}
+      onPointerCancel={() => {
+        drag.current = null;
+        setDragging(false);
+      }}
+      onLostPointerCapture={() => {
+        drag.current = null;
+        setDragging(false);
+      }}
     >
       <Boundary>
         {ready ? (
@@ -420,7 +510,7 @@ export default function Farm() {
               frameloop={still ? "demand" : "always"}
               gl={{ antialias: true, alpha: true }}
             >
-              <Scene still={still} />
+              <Scene still={still} rotation={rotation} dragging={dragging} />
             </Canvas>
           </Suspense>
         ) : (

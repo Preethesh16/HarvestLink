@@ -4,8 +4,8 @@ Executed locally on 21 October 2026.
 
 | Check | Result |
 | --- | --- |
-| Backend pytest suite | 19 passed |
-| Playwright browser suite | 6 passed |
+| Backend pytest suite | 22 passed |
+| Playwright browser suite | 13 passed |
 | TypeScript + Vite production build | Passed; lazy Three.js chunk size advisory |
 | Ruff static checks | Passed |
 | Python compile check | Passed |
@@ -34,3 +34,15 @@ The production build and all four Playwright journeys passed again after the vis
 - Source reference: https://docs.sarvam.ai/api-reference/text-to-speech/convert. Cinematic entrance inspiration: https://higgsfield.ai/; all farm geometry is local/original rather than copied media.
 
 Final entrance verification: 19 backend tests, 6 Playwright tests, TypeScript/Vite build and Ruff pass. Updated workflow recording completed without browser exceptions after introducing authenticated participants. Native-language mobile layout was visually inspected with no horizontal overflow.
+
+## Independent workflow audit and seasonal planning
+
+An independent browser-testing agent reviewed all four accounts, desktop and 320px mobile layouts, keyboard focus and missing-data states. It found and we corrected: 320px branding overlap, desktop sign-in/language collision, assistant Escape focus loss, and empty forecasts appearing as zero demand plus a default 40kg purchase. Mobile navigation now wraps so destinations are visible. The hidden dashboard farm renderer was removed to avoid unnecessary GPU work.
+
+The farm now rotates slowly while idle, supports direct pointer dragging and keyboard arrow/Home control, and respects reduced motion. The overlapping visual control strip was removed at the user's request.
+
+The farmer-only crop planner is an explainable shortlist, not a trained crop-yield model: broad season and irrigation assumptions, previous-crop family caution, and aggregate restaurant consumption from the last 28 completed days. Its 14-day demand range assumes repeated usage at harvest, with an illustrative ±25% variation. It does not turn the short-term Chronos forecast into a months-ahead prediction. No observed demand is shown explicitly. Agricultural references are linked in the page; local timing, varieties, soil and weather remain unverified.
+
+Independent UI rubric: **8.4/10** for this hackathon demo (visual hierarchy8.5, task clarity8.5, mobile8, keyboard8.5, feedback/data honesty8.5). This is an engineering/browser review, not a trial with actual farmers. Remaining limitations include native-speaker review and some technical inventory labels.
+
+Final combined audit: **22 backend tests +13 browser tests pass**. The actual canvas image changes after keyboard rotation; direct pointer dragging and reset are covered with reduced motion enabled.

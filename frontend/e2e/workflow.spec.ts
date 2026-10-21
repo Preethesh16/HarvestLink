@@ -66,7 +66,7 @@ test("buyer forecasting, CSV validation and private policy", async ({
     .getByRole("button", { name: "Inventory & forecast", exact: true })
     .click();
   await page.getByRole("button", { name: "Run forecast", exact: true }).click();
-  await expect(page.getByRole("status")).toContainText("Forecast refreshed", {
+  await expect(page.locator(".alert.success")).toContainText("Forecast refreshed", {
     timeout: 180000,
   });
   await expect(

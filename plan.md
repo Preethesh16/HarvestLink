@@ -246,3 +246,26 @@ Change log:
 - Added identity, onboarding, language and assistant tests. Actual Kannada answer and speech succeeded; full regional language quality review remains outside this demo verification.
 
 - Completed 19 backend and 6 browser tests, production build and static checks. Recorded the authenticated end-to-end workflow without browser errors. Refreshed entrance, sign-in, assistant and Kannada screenshots; documented four demo credentials and voice setup.
+
+## Independent workflow audit and interactive farm
+- [x] T1 — Independently audit realistic authenticated farmer/buyer journeys and rate UI with evidence.
+- [x] T2 — Add cursor/drag farm rotation, keyboard controls and reduced-motion support.
+- [x] T3 — Fix discovered defects, run focused regressions, document results and publish.
+
+Change log:
+- Started explicit verification goal and independent testing agent. Use isolated ports 5174/8001 for mutating scenarios; retain live demo data and connected services.
+
+### Additional requested planning feature
+- [x] T4 — Farmer seasonal crop shortlist with location, planting date, water, rotation caution and aggregate upcoming-demand scenarios; verify API and UI.
+- Added explicit Farmer/Buyer choice and backend mismatch protection. Removed the farm control strip per screenshot feedback; retain direct drag, slow idle motion and keyboard arrows/Home.
+- Independent audit exposed empty forecasts shown as zero/default40kg and320px header overlap. Fixed honest forecast empty states, stacked small-screen account badge, assistant focus return and landing control spacing.
+- Implemented farmer-only seasonal crop planner with explicit timing assumptions, aggregate28-day demand evidence, no-data labels and water/rotation constraints. Added API and UI tests, source links and ten-language labels.
+- Removed overlapping control strip; farm supports direct dragging, gentle idle movement and keyboard manipulation. Fixed mobile menu discoverability by wrapping destinations, and removed invisible dashboard3D rendering.
+
+## Queued after the current verification goal
+- [ ] Q1 — Rewrite README for judges and technical evaluators: problem/solution, evidence, architecture, setup, feature provenance and limitations.
+- [ ] Q2 — Create a230-second screen-recorded demo with current OpenAI natural voice narration, synchronized to authentic UI actions.
+- [ ] Q3 — Cover onboarding, farmer CSV/rules/offers, mutual agreement and simulated escrow, native-language helper, seasonal planning, nearby buyers, restaurant inventory/forecast/rules/purchase and completion; verify audio/video duration and publish.
+- User requested this as sequential work after the current testing goal. Do not label illustrative distance as real road routing or simulated escrow as real money.
+
+- Verification goal satisfied:22 backend tests and13 browser journeys pass, covering all accounts, role choice, accessibility, mobile layout, forecast data states, crop planning and direct3D rotation. Independent UI rating8.4/10; no real field trial claimed.
