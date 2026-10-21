@@ -1,0 +1,7 @@
+{
+  "synthetic": true,
+  "seed": 42,
+  "participants": "All names and quantities fictional",
+  "purpose": "Demo fixtures, not real agricultural or restaurant measurements",
+  "generated_from": "backend.domain.seed"
+}

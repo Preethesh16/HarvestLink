@@ -1,0 +1,15 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.env
+.env.*
+!.env.example
+node_modules/
+frontend/dist/
+var/
+*.sqlite*
+test-results/
+playwright-report/
+*.tsbuildinfo
+.ruff_cache/

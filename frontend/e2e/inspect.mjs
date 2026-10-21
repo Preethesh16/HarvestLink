@@ -1,0 +1,10 @@
+import { chromium } from '@playwright/test';
+const browser=await chromium.launch({channel:'chromium',headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader']});
+const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+page.on('pageerror',e=>console.log('PAGE ERROR',e.message));
+await page.goto('http://127.0.0.1:5173');
+await page.getByRole('heading',{name:'A better harvest.'}).waitFor();
+await page.waitForTimeout(2500);
+await page.screenshot({path:'../docs/images/farmer-dashboard.png',fullPage:true});
+console.log(await page.title(),await page.locator('body').innerText());
+await browser.close();
