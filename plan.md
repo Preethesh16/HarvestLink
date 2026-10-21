@@ -1,6 +1,6 @@
 # Farmer-to-restaurant marketplace: implementation plan
 
-Status: implementation in progress. Project name: HarvestLink.
+Status: local demonstration implemented, verified and published. Project name: HarvestLink.
 
 ## Milestones
 
@@ -10,9 +10,12 @@ Status: implementation in progress. Project name: HarvestLink.
 - [x] M4 — Scoped negotiation, farmer selection, agreement and stock reservation.
 - [x] M5 — Simulated payment, pickup, receipt and settlement.
 - [x] M6 — Browser and domain verification, responsive polish, screenshots and demo recording.
-- [ ] M7 — README, setup instructions, GitHub publication and final verification.
+- [x] M7 — README, setup instructions, GitHub publication and final verification.
 
 ## Implementation change log
+
+- M7 complete: committed and pushed the tested source, CSVs, screenshots, MP4 and README to the private GitHub repository https://github.com/Preethesh16/HarvestLink on main. All seven demo milestones are checked. External service credentials and production capabilities remain explicitly outside the verified local demonstration.
+
 
 - Publication preparation: normalized generated CSV line endings, excluded TypeScript build metadata and verified the staged files contain no supplied secrets. Only this implementation's files are staged; separate presentation work remains untouched.
 
