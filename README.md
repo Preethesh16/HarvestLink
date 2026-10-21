@@ -107,7 +107,7 @@ If an existing `.env` is present, preserve it. Environment variables supplied in
 
 Keep credentials in the server environment or ignored `.env`. No credentials belong in browser code, CSVs, screenshots or Git. OpenAI requests are opt-in, may incur provider charges, use `store: false`, and contain the agent’s own policy plus public trade terms. The app does not transmit personal profile details to that adapter.
 
-**Verification boundary:** local rule-based negotiation and actual Chronos inference were exercised. OpenAI and authenticated government-price calls require credentials and were not tested live. Failure paths are tested. Do not interpret configurable integrations as verified external partnerships.
+**Verification boundary:** local rule-based negotiation and actual Chronos inference were exercised. After configuration, one live OpenAI negotiation was exercised successfully; the default repository configuration still uses local policy agents. Authenticated government-price calls remain untested without a key. Failure paths are tested. Do not interpret configurable integrations as verified external partnerships.
 
 ## Your data, in a simple CSV
 

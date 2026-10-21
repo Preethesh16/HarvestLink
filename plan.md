@@ -14,6 +14,9 @@ Status: local demonstration implemented, verified and published. Project name: H
 
 ## Implementation change log
 
+- Live negotiation enabled: saved the user-supplied credential only in the Git-ignored server .env with owner-only permissions. Restarted the API in OpenAI mode. A real Restaurant A negotiation returned HTTP 200 and one eligible offer (40 kg at INR 27.20/kg); no purchase was selected or funded. The key is not included in documentation or source control. Government API access remains unconfigured.
+
+
 - M7 complete: committed and pushed the tested source, CSVs, screenshots, MP4 and README to the private GitHub repository https://github.com/Preethesh16/HarvestLink on main. All seven demo milestones are checked. External service credentials and production capabilities remain explicitly outside the verified local demonstration.
 
 
