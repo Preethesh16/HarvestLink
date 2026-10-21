@@ -19,3 +19,11 @@
 - Negotiation harvest selector supports multiple listings; offers resolve actual crop and explicitly label seeded nearby distances. Farmer harvest-card negotiation selects that harvest.
 - Market reference refresh calls the existing backend endpoint with source/error feedback.
 - Production build passes after polish.
+
+## Agricultural visual redesign
+
+- Replaced the original light hero with a 430px panoramic forest-green composition, cream sans headline and lime editorial serif emphasis. Existing heading text and action labels remain stable.
+- Integrated the new procedural farm and ProduceArt SVG component. Harvest availability and public restaurant count form a real-state scene overlay; landscape remains explicitly illustrative.
+- Rebuilt CSS as a coherent warmer paper/forest/lime system across metrics, harvests, negotiations, forecasts, orders, private settings and dialogs. Increased ordinary secondary copy to 12px.
+- Filled the one-harvest overview gap with a functional three-step journey card linking listings, negotiations and orders. Only public profile counts are used.
+- Read-only screenshot checks at 1440px and 390px confirm the scene and cards render without mobile overlap. No negotiation/API mutation was triggered during visual review.

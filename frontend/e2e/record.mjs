@@ -5,8 +5,8 @@ const browser=await chromium.launch({channel:'chromium',headless:true,slowMo:100
 const ctx=await browser.newContext({viewport:{width:1440,height:1000},recordVideo:{dir,size:{width:1440,height:1000}},reducedMotion:'reduce'});
 const page=await ctx.newPage();
 const errors=[];page.on('pageerror',e=>errors.push(e.message));
-await ctx.request.post('http://127.0.0.1:8000/api/reset',{headers:{'X-Actor':'farmer'}});
-await page.goto('http://127.0.0.1:5173');
+await ctx.request.post((process.env.TEST_API_URL||'http://127.0.0.1:8000')+'/api/reset',{headers:{'X-Actor':'farmer'}});
+await page.goto(process.env.TEST_BASE_URL||'http://127.0.0.1:5173');
 await page.getByRole('heading',{name:'A better harvest.'}).waitFor();
 async function caption(text){await page.evaluate(text=>{let el=document.querySelector('#recording-caption');if(!el){el=document.createElement('div');el.id='recording-caption';el.style.cssText='position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:9999;max-width:85%;padding:14px 24px;border-radius:12px;background:#173c2eee;color:#fff;font:500 16px system-ui;box-shadow:0 5px 30px #0003;text-align:center;pointer-events:none';document.body.append(el)}el.textContent=text},text);console.log(text);await page.waitForTimeout(1400)}
 await caption('HarvestLink · One grower. Three kitchens. The farmer makes the final choice.');

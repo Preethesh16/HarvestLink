@@ -215,3 +215,16 @@ Real-money escrow, wallets, production identity verification, multi-stop route o
 ## Dependencies to resolve during implementation
 
 Government API access and local coverage; agent model credentials; local Chronos runtime capacity; actual PPT template. These do not block building the initial screens, domain rules and clearly labelled demo fixtures.
+
+## Agricultural visual redesign
+
+- [x] R1 — Original produce artwork and a richer panoramic Three.js farm scene.
+- [x] R2 — Editorial forest/cream visual system across farmer and restaurant workflows.
+- [x] R3 — Isolated desktop/mobile regression checks, refreshed screenshots and publication.
+
+Change log:
+- Started a substantial visual redesign after user feedback. Preserve trading rules, private policies and configured OpenAI service. Replace the small toy-like illustration and generic cards with a larger agricultural scene and original crop illustrations. Keep separate presentation work untouched.
+
+- Implemented original SVG produce illustrations and a responsive Three.js farm with greenhouse, orchard, tractor and crop beds; reduced-motion and WebGL fallback retained.
+- Rebuilt farmer and buyer presentation with forest/cream surfaces, editorial typography and functional journey navigation. Production build and all four isolated Playwright journeys pass; refreshing recorded walkthrough.
+- Refreshed desktop/mobile screenshots and recorded the complete redesigned workflow without browser exceptions. Updated README and verification notes; prepared the redesign for publication.

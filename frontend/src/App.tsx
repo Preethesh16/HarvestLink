@@ -24,6 +24,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import ProduceArt from "./ProduceArt";
 const Farm = lazy(() => import("./Farm"));
 type Row = Record<string, any>;
 type State = {
@@ -307,13 +308,7 @@ export default function App() {
     return (
       <article className="lot-card" key={lot.id}>
         <div className="produce-art">
-          <span>
-            {String(lot.crop).toLowerCase().includes("tomato")
-              ? "🍅"
-              : String(lot.crop).toLowerCase().includes("banana")
-                ? "🍌"
-                : "🥬"}
-          </span>
+          <ProduceArt crop={lot.crop} />
           <Badge>{lot.grade || "Grade A"}</Badge>
         </div>
         <div className="lot-details">
@@ -1166,9 +1161,26 @@ export default function App() {
                     >
                       <Farm />
                     </Suspense>
+                    <div className="farm-stat">
+                      <span className="farm-stat-icon">
+                        <Sprout size={20} />
+                      </span>
+                      <div>
+                        <strong>
+                          {available} <small>kg available</small>
+                        </strong>
+                        <span>
+                          {
+                            profiles.filter((p) => p.role === "restaurant")
+                              .length
+                          }{" "}
+                          connected kitchens · demo network
+                        </span>
+                      </div>
+                    </div>
                     <span className="hero-stamp">
                       <Leaf size={13} />
-                      Farm-to-kitchen, thoughtfully connected
+                      Illustrative farm landscape · your harvest, connected
                     </span>
                   </section>
                   <div className="metrics">
@@ -1254,7 +1266,64 @@ export default function App() {
                         </button>
                       </div>
                       <div className="lots-grid">
-                        {lots.slice(0, 2).map((l) => renderLotCard({ lot: l }))}
+                        {lots.slice(0, 1).map((l) => renderLotCard({ lot: l }))}
+                        <article className="harvest-journey">
+                          <div className="eyebrow">
+                            THE PATH TO A BETTER DEAL
+                          </div>
+                          <h3>
+                            From your fields.
+                            <br />
+                            <em>To their kitchens.</em>
+                          </h3>
+                          <div className="journey-path">
+                            {[
+                              {
+                                label: "Share your harvest",
+                                description:
+                                  "Clear quantities. Clear possibilities.",
+                                page: farmer ? "My harvest" : "Marketplace",
+                                icon: Sprout,
+                              },
+                              {
+                                label: "Let the offers come",
+                                description:
+                                  "Your limits guide every negotiation.",
+                                page: "Negotiations",
+                                icon: Sparkles,
+                              },
+                              {
+                                label: "Choose. Confirm. Collect.",
+                                description: "People make the final decision.",
+                                page: "Orders",
+                                icon: Truck,
+                              },
+                            ].map((step, i) => (
+                              <button
+                                key={step.label}
+                                onClick={() => setPage(step.page)}
+                              >
+                                <span className="step-icon">
+                                  <step.icon size={18} />
+                                </span>
+                                <span>
+                                  <strong>{step.label}</strong>
+                                  <small>{step.description}</small>
+                                </span>
+                                <ArrowUpRight size={15} />
+                              </button>
+                            ))}
+                          </div>
+                          <div className="journey-foot">
+                            <span className="pulse" />
+                            Connected to{" "}
+                            {
+                              profiles.filter((p) => p.role === "restaurant")
+                                .length
+                            }{" "}
+                            restaurant workspaces
+                          </div>
+                        </article>
                       </div>
                     </section>
                     <section className="market-card">
@@ -1282,8 +1351,9 @@ export default function App() {
                       </button>
                       <div className="eyebrow">KNOW YOUR MARKET</div>
                       <h3>
-                        A reference.
-                        <br />A clearer conversation.
+                        Know the market.
+                        <br />
+                        <em>Own the conversation.</em>
                       </h3>
                       <div className="market-price">
                         {market?.modal_price != null ? (

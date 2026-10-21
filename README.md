@@ -154,7 +154,7 @@ flowchart LR
     API --> Market[Dated market adapter]
 ```
 
-The frontend uses React, TypeScript, Vite, React Three Fiber and a procedural low-poly farm. The scene is lazy-loaded, honours reduced-motion preference and has a WebGL fallback. Charts and forms remain usable independently of 3D.
+The frontend pairs forest-green and warm cream surfaces with editorial typography and original SVG produce illustrations. Its panoramic farm includes crop beds, an orchard, greenhouse and collection tractor, built with React, TypeScript, Vite and React Three Fiber. The scene is lazy-loaded, honours reduced-motion preference and has a WebGL fallback. Charts and forms remain usable independently of 3D.
 
 SQLite transactions protect reservations and state transitions. Model inference and external requests happen outside write transactions, with state checks before results are committed. Participant projections hide other buyers’ budgets and inventory; **the role selector is a local demonstration mechanism, not production authentication**.
 

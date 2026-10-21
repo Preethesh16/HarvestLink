@@ -1,5 +1,6 @@
 import {test,expect} from '@playwright/test';
-test.beforeEach(async({request})=>{await request.post('http://127.0.0.1:8000/api/reset',{headers:{'X-Actor':'farmer'}})});
+const API=process.env.TEST_API_URL||'http://127.0.0.1:8000';
+test.beforeEach(async({request})=>{await request.post(API+'/api/reset',{headers:{'X-Actor':'farmer'}})});
 test('farmer listing and three-buyer trade through settlement',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');
@@ -72,14 +73,14 @@ test('successful farmer and restaurant CSV onboarding',async({page,request})=>{
  await page.goto('/');
  await page.getByRole('button',{name:'My harvest',exact:true}).click();
  await page.getByRole('button',{name:'Import CSV',exact:true}).click();
- const harvest=await (await request.get('http://127.0.0.1:8000/api/templates/harvest.csv')).text();
+ const harvest=await (await request.get(API+'/api/templates/harvest.csv')).text();
  await page.getByLabel('CSV contents').fill(harvest.replace('Tomato','Cucumber'));
  await page.getByRole('button',{name:'Validate & import'}).click();
  await expect(page.getByRole('heading',{name:'Cucumber'})).toBeVisible();
  await page.getByLabel('Switch demo participant').selectOption('r1');
  await page.getByRole('button',{name:'Inventory & forecast',exact:true}).click();
  await page.getByRole('button',{name:'Import CSV',exact:true}).click();
- const inventory=await (await request.get('http://127.0.0.1:8000/api/templates/inventory.csv')).text();
+ const inventory=await (await request.get(API+'/api/templates/inventory.csv')).text();
  await page.getByLabel('CSV contents').fill(inventory);
  await page.getByRole('checkbox').check();
  await page.getByRole('button',{name:'Validate & import'}).click();
