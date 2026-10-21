@@ -297,3 +297,8 @@ Change log:
 - Completed 15 browser journeys (12 initial passes plus 3 corrected-selector reruns) and 45 backend cases. Production build passes. Updated README/data guide to distinguish synthetic participant data from the real, dated government snapshot. Restarted live services without resetting workspace data; revised narrated recording is running only on isolated services.
 
 - Re-recorded 13 chapters with actual Excel upload, public government report, model-assisted offers, explicit approvals and mapped delivery. Final video/audio are exactly 230.000 seconds; full decode and all narration transcript checks pass. Preserved the entire Kannada response at natural speed. Updated screenshots, README and provenance. Generalized the import success message for Excel and CSV. Preparing the verified revision for GitHub publication.
+
+## Price narration revision
+- [x] V1 — Replace the mandi narration with positive, accurate wording: original government-published Agmarknet data, retaining its19October reporting date. Regenerate that voice segment and subtitles, verify230-second output and publish. A dated snapshot must not be described as a real-time feed.
+
+- Regenerated only the mandi voice segment, rebuilt synchronized subtitles and video, and verified exactly230.000seconds plus all13 transcript matches. Publishing the narration revision.

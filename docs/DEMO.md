@@ -71,3 +71,5 @@ Voice generation incurs provider usage. Audio is cached in ignored `var/demo-pro
 ## Presenter’s fallback
 
 If an external service is unavailable during a live presentation, use the published recording and identify the failed service. For an offline interactive negotiation demonstration, configure `NEGOTIATION_MODE=local` and leave its local-policy label visible. Do not present fallback behavior as a successful live model call.
+
+Price narration revision: the mandi chapter now describes **original government-published Agmarknet prices**, while retaining the 19 October reporting date. This wording distinguishes real source data from the synthetic demo inventory without claiming a continuous real-time feed.

@@ -35,153 +35,149 @@ grade, quantity, price and availability stay visible. After validation, all work
 rows become harvest listings. No manual database editing is needed.
 
 10
-00:00:48,000 --> 00:00:51,375
-Mandi prices have their own report. Here, twenty-four cached government records
+00:00:48,000 --> 00:00:52,500
+These are original government-published commodity prices from Agmarknet, reported on nineteenth
 
 11
-00:00:51,375 --> 00:00:54,750
-carry their source and nineteenth October reporting date. The farmer can
+00:00:52,500 --> 00:00:57,000
+October. Farmers can compare twenty-four commodities, check the source and reporting
 
 12
-00:00:54,750 --> 00:00:58,125
-inspect market, commodity and units. Reported prices are benchmarks, not guaranteed
+00:00:57,000 --> 00:01:01,500
+date, and view prices per quintal or kilogram before negotiating.
 
 13
-00:00:58,125 --> 00:01:01,500
-selling rates.
-
-14
 00:01:02,000 --> 00:01:06,500
 The grower sets a private minimum price, minimum order quantity and
 
-15
+14
 00:01:06,500 --> 00:01:11,000
 nearby service radius. Those rules constrain negotiation. They do not authorize
 
-16
+15
 00:01:11,000 --> 00:01:15,500
 a sale: the farmer always makes the final buyer selection.
 
-17
+16
 00:01:16,000 --> 00:01:21,400
 Madhu answers in Kannada. Hear the app’s actual Sarvam voice response.
 
-18
+17
 00:01:22,000 --> 00:01:36,000
 [Actual Sarvam Kannada response: guidance on comparing buyer offers.]
 
-19
+18
 00:01:36,000 --> 00:01:40,375
 Next-crop planning combines the planting date, water availability, rotation context and
 
-20
+19
 00:01:40,375 --> 00:01:44,750
 restaurant usage. The farmer can inspect candidate crops and change the
 
-21
+20
 00:01:44,750 --> 00:01:49,125
 water assumption. These are transparent planning scenarios, not guaranteed demand or
 
-22
+21
 00:01:49,125 --> 00:01:53,500
 locally validated growing advice.
 
-23
+22
 00:01:54,000 --> 00:01:58,300
 The Green Table opens its own inventory view. Amazon Chronos Two
 
-24
+23
 00:01:58,300 --> 00:02:02,600
 forecasts consumption from synthetic usage history. Separate inventory logic accounts for
 
-25
+24
 00:02:02,600 --> 00:02:06,900
 usable batches and incoming orders, then recommends replenishment. The evaluation shows
 
-26
+25
 00:02:06,900 --> 00:02:11,200
 both model and baseline errors honestly; the model is not assumed
 
-27
+26
 00:02:11,200 --> 00:02:15,500
 to win.
 
-28
+27
 00:02:16,000 --> 00:02:19,875
 The restaurant sets its maximum price and total budget, reviews the
 
-29
+28
 00:02:19,875 --> 00:02:23,750
 suggested quantity, and approves a purchase requirement. The marketplace connects that
 
-30
+29
 00:02:23,750 --> 00:02:27,625
 requirement to farmer listings. Forecasting supports a decision; it never silently
 
-31
+30
 00:02:27,625 --> 00:02:31,500
 spends money.
 
-32
+31
 00:02:32,000 --> 00:02:36,583
 Three restaurant agents submit proposals within their own limits. The replay
 
-33
+32
 00:02:36,583 --> 00:02:41,167
 presents the actual recorded negotiation steps, while the price chart makes
 
-34
+33
 00:02:41,167 --> 00:02:45,750
 changes easy to compare. These are model-assisted offers, checked by server
 
-35
+34
 00:02:45,750 --> 00:02:50,333
 rules. The farmer reviews quantity, price and collection terms, then explicitly
 
-36
+35
 00:02:50,333 --> 00:02:54,917
 chooses The Green Table. The system does not pick a winner
 
-37
+36
 00:02:54,917 --> 00:02:59,500
 on the farmer's behalf.
 
-38
+37
 00:03:00,000 --> 00:03:04,300
 The selected restaurant reviews the same agreement and confirms it. Stock
 
-39
+38
 00:03:04,300 --> 00:03:08,600
 is reserved only after confirmation. Funding moves the order into a
 
-40
+39
 00:03:08,600 --> 00:03:12,900
 clearly labelled simulated escrow state. The agreement animation and funded amount
 
-41
+40
 00:03:12,900 --> 00:03:17,200
 show this change visually. No real money moves, and funding is
 
-42
+41
 00:03:17,200 --> 00:03:21,500
 separate from the farmer's selection.
 
-43
+42
 00:03:22,000 --> 00:03:27,375
 The farmer records collection and plays the delivery simulation on the
 
-44
+43
 00:03:27,375 --> 00:03:32,750
 Leaflet map. The moving vehicle follows an illustrative route, not live
 
-45
+44
 00:03:32,750 --> 00:03:38,125
 GPS. The restaurant confirms receipt, adding the delivered produce to inventory.
 
-46
+45
 00:03:38,125 --> 00:03:43,500
 Finally, the farmer releases simulated funds, completing the visible agreement-to-delivery journey.
 
-47
+46
 00:03:44,000 --> 00:03:49,500
 Farmer choice. Kitchen foresight. Clear agreements. One connected HarvestLink workflow.
