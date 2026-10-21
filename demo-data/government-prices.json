@@ -1,0 +1,157 @@
+{
+  "source": "Agmarknet 2.0 · Government of India",
+  "source_url": "https://agmarknet.gov.in/home",
+  "reporting_date": "2026-10-19",
+  "previous_reporting_date": "2026-10-18",
+  "retrieved_at": "2026-10-21",
+  "coverage": "All states / all markets · FAQ grade · published dashboard aggregate",
+  "retrieval_method": "Public homepage table read in browser; all filters, 30 rows per page. Dashboard says data is frozen up to 19 October 2026.",
+  "source_unit": "INR per quintal",
+  "status": "dated_government_snapshot",
+  "records": [
+    {
+      "group": "Cereals",
+      "commodity": "Bajra(Pearl Millet/Cumbu)",
+      "price_quintal": 2392.73,
+      "previous_price_quintal": 2271.12
+    },
+    {
+      "group": "Cereals",
+      "commodity": "Barley(Jau)",
+      "price_quintal": 2137.67,
+      "previous_price_quintal": 2407.22
+    },
+    {
+      "group": "Cereals",
+      "commodity": "Jowar(Sorghum)",
+      "price_quintal": 4429.82,
+      "previous_price_quintal": 2356.92
+    },
+    {
+      "group": "Cereals",
+      "commodity": "Maize",
+      "price_quintal": 2431.73,
+      "previous_price_quintal": 2323.98
+    },
+    {
+      "group": "Cereals",
+      "commodity": "Paddy(Common)",
+      "price_quintal": 2686.65,
+      "previous_price_quintal": 2635.08
+    },
+    {
+      "group": "Cereals",
+      "commodity": "Ragi(Finger Millet)",
+      "price_quintal": 3325.28,
+      "previous_price_quintal": 3600.0
+    },
+    {
+      "group": "Cereals",
+      "commodity": "Wheat",
+      "price_quintal": 2672.67,
+      "previous_price_quintal": 2506.58
+    },
+    {
+      "group": "Fibre Crops",
+      "commodity": "Cotton",
+      "price_quintal": 9359.89,
+      "previous_price_quintal": 8976.94
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Copra",
+      "price_quintal": 23771.5,
+      "previous_price_quintal": 26901.06
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Groundnut",
+      "price_quintal": 7535.71,
+      "previous_price_quintal": 6808.8
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Mustard",
+      "price_quintal": 7904.39,
+      "previous_price_quintal": 7717.76
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Niger Seed(Ramtil)",
+      "price_quintal": 10050.0,
+      "previous_price_quintal": null
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Safflower",
+      "price_quintal": 5861.0,
+      "previous_price_quintal": null
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Sesamum(Sesame,Gingelly,Til)",
+      "price_quintal": 14169.74,
+      "previous_price_quintal": 12201.07
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Soyabean",
+      "price_quintal": 6822.03,
+      "previous_price_quintal": 6482.19
+    },
+    {
+      "group": "Oil Seeds",
+      "commodity": "Sunflower/Sunflower Seed",
+      "price_quintal": 8228.87,
+      "previous_price_quintal": 7662.86
+    },
+    {
+      "group": "Pulses",
+      "commodity": "Bengal Gram(Gram)(Whole)",
+      "price_quintal": 8916.56,
+      "previous_price_quintal": 6795.98
+    },
+    {
+      "group": "Pulses",
+      "commodity": "Black Gram(Urd Beans)(Whole)",
+      "price_quintal": 8618.86,
+      "previous_price_quintal": 8626.62
+    },
+    {
+      "group": "Pulses",
+      "commodity": "Green Gram(Moong)(Whole)",
+      "price_quintal": 8611.37,
+      "previous_price_quintal": 7215.43
+    },
+    {
+      "group": "Pulses",
+      "commodity": "Lentil(Masur)(Whole)",
+      "price_quintal": 10572.87,
+      "previous_price_quintal": 7500.0
+    },
+    {
+      "group": "Pulses",
+      "commodity": "Red gram/Arhar/Tur(whole)",
+      "price_quintal": 9825.92,
+      "previous_price_quintal": 10792.89
+    },
+    {
+      "group": "Vegetables",
+      "commodity": "Onion",
+      "price_quintal": 3856.79,
+      "previous_price_quintal": 3807.41
+    },
+    {
+      "group": "Vegetables",
+      "commodity": "Potato",
+      "price_quintal": 620.06,
+      "previous_price_quintal": 560.63
+    },
+    {
+      "group": "Vegetables",
+      "commodity": "Tomato",
+      "price_quintal": 1769.29,
+      "previous_price_quintal": 2258.44
+    }
+  ]
+}

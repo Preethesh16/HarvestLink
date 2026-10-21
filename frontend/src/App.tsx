@@ -11,6 +11,8 @@ import {
   Leaf,
   LayoutDashboard,
   MapPin,
+  Handshake,
+  ShoppingCart,
   Package,
   Plus,
   RefreshCw,
@@ -26,6 +28,9 @@ import {
 import { useLocale } from "./Locale";
 import Assistant from "./Assistant";
 import CropPlanner from "./CropPlanner";
+import MarketPrices from "./MarketPrices";
+import DeliveryMap from "./DeliveryMap";
+import { NegotiationReplay, AgreementScene } from "./TradeJourney";
 import ProduceArt from "./ProduceArt";
 type Row = Record<string, any>;
 type State = {
@@ -70,7 +75,7 @@ function Empty({ children }: { children: ReactNode }) {
   const { tr } = useLocale();
   return (
     <div className="empty">
-      <Sprout size={28} />
+      <Package size={28} />
       <p>{typeof children === "string" ? tr(children) : children}</p>
     </div>
   );
@@ -114,6 +119,7 @@ export default function App({ initialActor }: { initialActor: string }) {
   const [modal, setModal] = useState("");
   const [importKind, setImportKind] = useState("harvest");
   const [csv, setCsv] = useState("");
+  const [sheet, setSheet] = useState<Row | null>(null);
   const [replaceImport, setReplaceImport] = useState(false);
   const [requestLot, setRequestLot] = useState<Row | null>(null);
   const [negotiationLot, setNegotiationLot] = useState("");
@@ -270,14 +276,17 @@ export default function App({ initialActor }: { initialActor: string }) {
   const selectedOffers = offers.filter((o) => o.lot_id === selectedLotId);
   const orders = state?.orders || [];
   const policy = state?.policy || {};
-  const market = Array.isArray(state?.market)
-    ? state?.market[0]
-    : state?.market;
+
   const fs = state?.forecasts;
   const forecast: Row = Array.isArray(fs)
     ? fs.find((f) => !f.actor || f.actor === actor) || fs[0] || {}
     : fs?.[actor] || fs || {};
-  const hasForecast = [forecast.daily,forecast.predictions,forecast.forecast,forecast.points].some(rows=>Array.isArray(rows)&&rows.length>0);
+  const hasForecast = [
+    forecast.daily,
+    forecast.predictions,
+    forecast.forecast,
+    forecast.points,
+  ].some((rows) => Array.isArray(rows) && rows.length > 0);
   const inventory = state?.inventory || [];
   const available = lots.reduce(
     (s, l) =>
@@ -305,6 +314,7 @@ export default function App({ initialActor }: { initialActor: string }) {
         "Overview",
         "My harvest",
         "What to grow next",
+        "Mandi prices",
         "Negotiations",
         "Orders",
         "Agent settings",
@@ -317,7 +327,17 @@ export default function App({ initialActor }: { initialActor: string }) {
         "Orders",
         "Agent settings",
       ];
-  const icons = [LayoutDashboard, Sprout, Sparkles, Truck, Settings2];
+  const icons: Record<string, typeof Sprout> = {
+    Overview: LayoutDashboard,
+    "My harvest": Sprout,
+    "What to grow next": Sprout,
+    "Mandi prices": BarChart3,
+    "Inventory & forecast": Package,
+    Marketplace: ShoppingCart,
+    Negotiations: Handshake,
+    Orders: Truck,
+    "Agent settings": Settings2,
+  };
   function renderLotCard({ lot }: { lot: Row }) {
     return (
       <article className="lot-card" key={lot.id}>
@@ -556,6 +576,7 @@ export default function App({ initialActor }: { initialActor: string }) {
             ))}
           </section>
         )}
+        <NegotiationReplay offers={offers} busy={busy} />
         {renderActivity()}
       </>
     );
@@ -639,6 +660,7 @@ export default function App({ initialActor }: { initialActor: string }) {
                   )}
                 </strong>
               </div>
+              <AgreementScene order={o} />
               <div className="order-steps">
                 {[
                   "awaiting_buyer",
@@ -668,6 +690,11 @@ export default function App({ initialActor }: { initialActor: string }) {
                   </div>
                 ))}
               </div>
+              <DeliveryMap
+                buyer={o.buyer_id || o.buyer}
+                buyerName={buyerName(o.buyer_id || o.buyer)}
+                status={o.status}
+              />
               <div className="actions">
                 {!farmer &&
                   [
@@ -965,11 +992,13 @@ export default function App({ initialActor }: { initialActor: string }) {
               className="text-button"
               onClick={() => {
                 setImportKind("inventory");
+                setSheet(null);
+                setCsv("");
                 setModal("import");
               }}
             >
               <Upload size={15} />
-              {tr("Import CSV")}
+              {tr("Import Excel / CSV")}
             </button>
           </div>
           <div className="table-wrap">
@@ -1009,6 +1038,8 @@ export default function App({ initialActor }: { initialActor: string }) {
               className="text-button"
               onClick={() => {
                 setImportKind("consumption");
+                setSheet(null);
+                setCsv("");
                 setModal("import");
               }}
             >
@@ -1050,8 +1081,8 @@ export default function App({ initialActor }: { initialActor: string }) {
           <strong>{tr(names[actor])}</strong>
         </div>
         <nav>
-          {tabs.map((t, i) => {
-            const Icon = icons[i % icons.length];
+          {tabs.map((t) => {
+            const Icon = icons[t];
             return (
               <button
                 key={t}
@@ -1160,7 +1191,7 @@ export default function App({ initialActor }: { initialActor: string }) {
           )}
           {!state ? (
             <div className="loading">
-              <Sprout size={36} />
+              <Package size={36} />
               <h2>{tr("Opening your workspace…")}</h2>
               <button className="button secondary" onClick={() => load()}>
                 {tr("Try connection again")}
@@ -1168,6 +1199,11 @@ export default function App({ initialActor }: { initialActor: string }) {
             </div>
           ) : (
             <>
+              {farmer && page === "Mandi prices" && (
+                <MarketPrices
+                  crops={[...new Set(lots.map((l) => String(l.crop)))]}
+                />
+              )}
               {farmer && page === "What to grow next" && (
                 <CropPlanner
                   location={profile.location || "Bantwal, Karnataka"}
@@ -1179,7 +1215,11 @@ export default function App({ initialActor }: { initialActor: string }) {
                     <div className="hero-copy">
                       <div className="eyebrow">
                         <span className="tiny-line" />
-                        {tr("GROW TOGETHER. TRADE BETTER.")}
+                        {tr(
+                          farmer
+                            ? "GROW TOGETHER. TRADE BETTER."
+                            : "PLAN. PURCHASE. RECEIVE.",
+                        )}
                       </div>
                       <h1>
                         {farmer ? (
@@ -1230,29 +1270,33 @@ export default function App({ initialActor }: { initialActor: string }) {
                       </div>
                     </div>
 
-                    <div className="farm-stat">
-                      <span className="farm-stat-icon">
-                        <Sprout size={20} />
-                      </span>
-                      <div>
-                        <strong>
-                          {available} <small>{tr("kg available")}</small>
-                        </strong>
-                        <span>
-                          {
-                            profiles.filter((p) => p.role === "restaurant")
-                              .length
-                          }{" "}
-                          {tr("connected kitchens · demo network")}
+                    {farmer && (
+                      <>
+                        <div className="farm-stat">
+                          <span className="farm-stat-icon">
+                            <Sprout size={20} />
+                          </span>
+                          <div>
+                            <strong>
+                              {available} <small>{tr("kg available")}</small>
+                            </strong>
+                            <span>
+                              {
+                                profiles.filter((p) => p.role === "restaurant")
+                                  .length
+                              }{" "}
+                              {tr("connected kitchens · demo network")}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="hero-stamp">
+                          <Leaf size={13} />
+                          {tr(
+                            "Illustrative farm landscape · your harvest, connected",
+                          )}
                         </span>
-                      </div>
-                    </div>
-                    <span className="hero-stamp">
-                      <Leaf size={13} />
-                      {tr(
-                        "Illustrative farm landscape · your harvest, connected",
-                      )}
-                    </span>
+                      </>
+                    )}
                   </section>
                   <div className="metrics">
                     <Metric
@@ -1263,7 +1307,9 @@ export default function App({ initialActor }: { initialActor: string }) {
                           ? `${lots.length} harvest lots ready to trade`
                           : "Across your ingredient batches"
                       }
-                      icon={<Sprout size={20} />}
+                      icon={
+                        farmer ? <Sprout size={20} /> : <Package size={20} />
+                      }
                     />
                     <Metric
                       title={farmer ? "Buyer offers" : "Purchase requirements"}
@@ -1298,18 +1344,14 @@ export default function App({ initialActor }: { initialActor: string }) {
                       }
                       value={
                         farmer
-                          ? market?.modal_price != null
-                            ? money(market.modal_price)
-                            : "Reported prices"
+                          ? "Agmarknet"
                           : hasForecast
                             ? `${suggestion} kg`
                             : "—"
                       }
                       note={
                         farmer
-                          ? market?.status === "reported"
-                            ? "Source units require review"
-                            : "Synthetic reference · not live"
+                          ? "Dated government report · Mandi prices"
                           : "Review before purchasing"
                       }
                       icon={<BarChart3 size={20} />}
@@ -1349,28 +1391,44 @@ export default function App({ initialActor }: { initialActor: string }) {
                             {tr("THE PATH TO A BETTER DEAL")}
                           </div>
                           <h3>
-                            {tr("From your fields.")}
+                            {tr(
+                              farmer
+                                ? "From your fields."
+                                : "For your business.",
+                            )}
                             <br />
-                            <em>{tr("To their kitchens.")}</em>
+                            <em>
+                              {tr(
+                                farmer
+                                  ? "To their kitchens."
+                                  : "Plan. Buy. Receive.",
+                              )}
+                            </em>
                           </h3>
                           <div className="journey-path">
                             {[
                               {
-                                label: "Share your harvest",
+                                label: farmer
+                                  ? "Share your harvest"
+                                  : "Find available produce",
                                 description:
                                   "Clear quantities. Clear possibilities.",
                                 page: farmer ? "My harvest" : "Marketplace",
-                                icon: Sprout,
+                                icon: farmer ? Sprout : ShoppingCart,
                               },
                               {
-                                label: "Let the offers come",
+                                label: farmer
+                                  ? "Let the offers come"
+                                  : "Set your buying limits",
                                 description:
                                   "Your limits guide every negotiation.",
                                 page: "Negotiations",
                                 icon: Sparkles,
                               },
                               {
-                                label: "Choose. Confirm. Collect.",
+                                label: farmer
+                                  ? "Choose. Confirm. Collect."
+                                  : "Confirm and receive",
                                 description: "People make the final decision.",
                                 page: "Orders",
                                 icon: Truck,
@@ -1384,7 +1442,7 @@ export default function App({ initialActor }: { initialActor: string }) {
                                   <step.icon size={18} />
                                 </span>
                                 <span>
-                                  <strong>{step.label}</strong>
+                                  <strong>{tr(step.label)}</strong>
                                   <small>{tr(step.description)}</small>
                                 </span>
                                 <ArrowUpRight size={15} />
@@ -1398,101 +1456,45 @@ export default function App({ initialActor }: { initialActor: string }) {
                               profiles.filter((p) => p.role === "restaurant")
                                 .length
                             }{" "}
-                            {tr("restaurant workspaces")}
+                            {tr(
+                              farmer
+                                ? "restaurant workspaces"
+                                : "buyer workspaces",
+                            )}
                           </div>
                         </article>
                       </div>
                     </section>
-                    <section className="market-card">
-                      <div className="panel-heading">
+                    {farmer && (
+                      <section className="market-card">
                         <span className="circle-icon">
                           <BarChart3 size={20} />
                         </span>
-                        <Badge tone="amber">
+                        <div className="eyebrow">{tr("KNOW YOUR MARKET")}</div>
+                        <h3>
+                          {tr("Know the market.")}
+                          <br />
+                          <em>{tr("Own the conversation.")}</em>
+                        </h3>
+                        <p>
                           {tr(
-                            market?.status === "reported"
-                              ? "Reported prices"
-                              : market?.status === "cached"
-                                ? "Cached reference"
-                                : "Demo reference",
+                            "Compare government-published commodity prices before choosing an offer.",
                           )}
-                        </Badge>
-                      </div>
-                      <button
-                        className="text-button"
-                        disabled={busy}
-                        onClick={() =>
-                          action("/market/refresh", {}, "Market source checked")
-                        }
-                      >
-                        <RefreshCw size={12} />
-                        {tr("Refresh reference")}
-                      </button>
-                      <div className="eyebrow">{tr("KNOW YOUR MARKET")}</div>
-                      <h3>
-                        {tr("Know the market.")}
-                        <br />
-                        <em>{tr("Own the conversation.")}</em>
-                      </h3>
-                      <div className="market-price">
-                        {market?.modal_price != null ? (
-                          <>
-                            {money(market.modal_price)}
-                            <small>{tr("/ kg")}</small>
-                          </>
-                        ) : (
-                          <span className="reported-label">
-                            {tr("See reported prices")}
-                          </span>
-                        )}
-                      </div>
-                      <p>
-                        {market?.market || "Mangaluru"}
-                        {" · "} {market?.commodity || market?.crop || "Tomato"}
-                      </p>
-                      <div className="market-date">
-                        <Clock3 size={14} />
-                        {market?.reporting_date ||
-                          market?.date ||
-                          "Dated synthetic fixture"}
-                      </div>
-                      <p className="caption">
-                        {market?.source ? tr(market.source) : ""}
-                        {tr(
-                          ". Compare grade, location and collection terms.",
-                        )}{" "}
-                        {tr(
-                          market?.status === "demo"
-                            ? "This is not a live government quote."
-                            : "",
-                        )}
-                      </p>
-                      {market?.records?.length > 0 && (
-                        <details className="market-records">
-                          <summary>{tr("Inspect source records")}</summary>
-                          {market.records
-                            .slice(0, 5)
-                            .map((r: Row, i: number) => (
-                              <p key={i}>
-                                {r.market}
-                                {" · "}
-                                {r.commodity}
-                                {" · "}
-                                {r.variety}
-                                <br />
-                                {tr("Modal:")}
-                                {r.modal_price}
-                                {" · "}
-                                {r.arrival_date}
-                                <br />
-                                {tr(
-                                  "Source unit unverified; not converted to ₹/kg.",
-                                )}
-                              </p>
-                            ))}
-                        </details>
-                      )}
-                    </section>
+                        </p>
+                        <p className="caption">
+                          {tr(
+                            "Dated national report. Local prices, grade and delivery costs can differ.",
+                          )}
+                        </p>
+                        <button
+                          className="button secondary"
+                          onClick={() => setPage("Mandi prices")}
+                        >
+                          {tr("View government prices")}
+                          <ArrowUpRight size={16} />
+                        </button>
+                      </section>
+                    )}
                   </div>
                   <div className="journey-strip">
                     <span className="circle-icon">
@@ -1542,11 +1544,14 @@ export default function App({ initialActor }: { initialActor: string }) {
                           className="button secondary"
                           onClick={() => {
                             setImportKind("harvest");
+                            setSheet(null);
+                            setCsv("");
+                            setSheet(null);
                             setModal("import");
                           }}
                         >
                           <Upload size={16} />
-                          {tr("Import CSV")}
+                          {tr("Import Excel / CSV")}
                         </button>
                         <button
                           className="button"
@@ -1843,6 +1848,7 @@ export default function App({ initialActor }: { initialActor: string }) {
                         onClick={() => {
                           setImportKind(k);
                           setCsv("");
+                          setSheet(null);
                         }}
                       >
                         {pretty(k)}
@@ -1860,14 +1866,42 @@ export default function App({ initialActor }: { initialActor: string }) {
                 </a>
                 <label className="upload-zone">
                   <Upload size={26} />
-                  <strong>{tr("Choose a CSV file")}</strong>
+                  <strong>{tr("Choose Excel or CSV")}</strong>
                   <span>{tr("Or paste your CSV below")}</span>
                   <input
                     type="file"
-                    accept=".csv,text/csv"
+                    accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     onChange={async (e) => {
                       const f = e.target.files?.[0];
-                      if (f) setCsv(await f.text());
+                      if (!f) return;
+                      setSheet(null);
+                      setCsv("");
+                      if (f.size > 2_000_000) {
+                        setError("File must be smaller than 2 MB");
+                        return;
+                      }
+                      try {
+                        if (f.name.toLowerCase().endsWith(".xlsx")) {
+                          const bytes = new Uint8Array(await f.arrayBuffer());
+                          let binary = "";
+                          for (const b of bytes)
+                            binary += String.fromCharCode(b);
+                          const res = await fetch("/api/spreadsheets/preview", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              kind: importKind,
+                              content: btoa(binary),
+                            }),
+                          });
+                          const data = await res.json();
+                          if (!res.ok) throw Error(data.detail);
+                          setCsv(data.csv);
+                          setSheet({ ...data, name: f.name });
+                        } else setCsv(await f.text());
+                      } catch (e) {
+                        setError((e as Error).message);
+                      }
                     }}
                   />
                 </label>
@@ -1883,10 +1917,51 @@ export default function App({ initialActor }: { initialActor: string }) {
                     {tr("records")}
                   </label>
                 )}
+                {sheet && (
+                  <section
+                    className="sheet-preview"
+                    aria-label="Excel workbook preview"
+                  >
+                    <strong>
+                      {sheet.name} · {sheet.count} {tr("crop rows")}
+                    </strong>
+                    <div className="table-scroll">
+                      <table>
+                        <thead>
+                          <tr>
+                            {sheet.headers.map((h: string) => (
+                              <th key={h}>{h}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sheet.rows.map((r: any[], i: number) => (
+                            <tr key={i}>
+                              {r.map((v: any, j: number) => (
+                                <td key={j}>{String(v)}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <p>
+                      {tr(
+                        "Preview only. Validate and import to save these rows.",
+                      )}
+                    </p>
+                  </section>
+                )}
+                <a href={`/api/templates/${importKind}.xlsx`} download>
+                  {tr("Download Excel template")}
+                </a>
                 <textarea
                   aria-label={tr("CSV contents")}
                   value={csv}
-                  onChange={(e) => setCsv(e.target.value)}
+                  onChange={(e) => {
+                    setCsv(e.target.value);
+                    setSheet(null);
+                  }}
                   placeholder={tr("Paste CSV with header row…")}
                   rows={5}
                 />
@@ -1897,7 +1972,7 @@ export default function App({ initialActor }: { initialActor: string }) {
                     action(
                       `/import/${importKind}`,
                       { csv, replace: !farmer && replaceImport },
-                      "CSV imported successfully",
+                      "Spreadsheet imported successfully",
                     )
                   }
                 >

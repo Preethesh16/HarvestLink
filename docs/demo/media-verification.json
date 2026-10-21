@@ -22,7 +22,64 @@
   ],
   "format": {
     "duration": "230.000000",
-    "size": "13582401"
+    "size": "15898621"
   },
-  "sha256": "db06b2443ac335b1b0f6abb6157558ad526332f2cd92c6eb465496bd6a27b756"
+  "sha256": "359ab9fb6753d45699f71023511edb44277eaa5f199c04948d7bcd6ee159951e",
+  "chapters": 13,
+  "narration_checks": [
+    {
+      "scene": "01-intro",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "02-onboarding",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "03-excel",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "04-mandi",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "05-rules",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "06-language",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "07-planning",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "08-forecast",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "09-purchase",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "10-negotiation",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "11-escrow",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "12-delivery",
+      "normalized_script_matches": true
+    },
+    {
+      "scene": "13-close",
+      "normalized_script_matches": true
+    }
+  ],
+  "sarvam_response_seconds": 13.312018,
+  "sarvam_presentation": "Full natural-speed response in a fourteen-second slot"
 }

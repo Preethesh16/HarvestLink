@@ -213,7 +213,9 @@ function Scene({
   const ref = useRef<Group>(null);
   const shape = useMemo(() => roundedPlot(8.1, 5.8, 0.65), []);
   const drift = useRef(0);
-  useEffect(() => { if (rotation[0] === 0 && rotation[1] === 0) drift.current = 0; }, [rotation]);
+  useEffect(() => {
+    if (rotation[0] === 0 && rotation[1] === 0) drift.current = 0;
+  }, [rotation]);
   useFrame((_, delta) => {
     if (!still && !dragging) drift.current += Math.min(delta, 0.05) * 0.018;
     if (ref.current && !still) {

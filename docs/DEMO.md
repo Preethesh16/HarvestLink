@@ -2,33 +2,34 @@
 
 [Watch the narrated screen recording](video/harvestlink-demo.mp4) · [Optional English subtitles](video/harvestlink-demo.srt) · [Exact narration script](demo/scenes.json)
 
-The film follows one farmer and The Green Table, with two additional restaurant offers. It records the working application using synthetic accounts and histories. All payments are simulated. Local computation and service waits are shortened to fit the chapters; session changes are edited between perspectives. The Kannada answer is held on screen during its speech excerpt.
+The film follows one farmer and The Green Table, with two additional restaurant offers. The farmer uploads the actual `demo-data/farmer-harvest.xlsx` workbook, inspects its preview and imports every row before opening the separate mandi report. It records the working application using synthetic accounts and histories. All payments are simulated. Local computation and service waits are shortened to fit the chapters; session changes are edited between perspectives. The Kannada chapter uses six seconds of English introduction followed by fourteen seconds for the full natural-speed Sarvam response, held against the actual captured Kannada answer. Long measured provider waits are removed; the recorded replay and delivery animation remain actual application interactions.
 
 ## Chapter guide
 
 | Time | Screen / story |
 | --- | --- |
-| 00:00–00:18 | Agricultural entrance; direct market-access problem and solution |
-| 00:18–00:36 | Farmer role, sign-in and name/location onboarding |
-| 00:36–00:56 | Real harvest CSV upload and validation; dated market-reference disclosure |
-| 00:56–01:14 | Farmer minimum price, order size and radius; save private limits |
-| 01:14–01:36 | Kannada interface, Madhu answer and actual Sarvam Kannada speech |
-| 01:36–01:56 | Next-crop suggestions, seasonal assumptions, demand evidence and water constraints |
-| 01:56–02:20 | Restaurant inventory import controls and actual Chronos-2 consumption forecast |
-| 02:20–02:40 | Approve purchase requirement, buyer budget/price limits and marketplace |
-| 02:40–03:00 | Three offers, negotiation steps, illustrative nearby distances and farmer choice |
-| 03:00–03:18 | Buyer agreement, stock reservation and funded simulated escrow |
-| 03:18–03:38 | Farmer pickup, buyer receipt, inventory update and settlement |
-| 03:38–03:50 | Outcome, verification evidence and next validation step |
+| 00:00–00:12 | HarvestLink · From harvest to a human-approved deal |
+| 00:12–00:26 | 01 / FARMER · A private workspace |
+| 00:26–00:48 | Actual Excel workbook → preview → every validated harvest row |
+| 00:48–01:02 | Separate mandi report · Source, date and units stay visible |
+| 01:02–01:16 | The farmer sets the boundaries |
+| 01:16–01:36 | Kannada workspace · Madhu with actual Sarvam speech |
+| 01:36–01:54 | Next-crop planning · Explainable scenarios |
+| 01:54–02:16 | 02 / RESTAURANT · Forecast consumption, account for expiry |
+| 02:16–02:32 | Buyer limits → an approved purchase requirement |
+| 02:32–03:00 | Actual AI offers · Replay, price chart and farmer choice |
+| 03:00–03:22 | Mutual agreement → stock reservation → simulated escrow |
+| 03:22–03:44 | Leaflet delivery simulation · Receipt and settlement |
+| 03:44–03:50 | HarvestLink · Better-informed trade. Human decisions. |
 
 ## Narration and provenance
 
 - **English narration:** OpenAI `gpt-realtime-2.1`, **Marin**, generated through the Realtime WebSocket API on 21 October 2026. This is an AI-generated voice, not a human recording.
-- **Kannada excerpt:** the actual audio returned by the application’s Sarvam `bulbul:v3` integration when the recorded farmer asks Madhu for guidance.
+- **Kannada response:** the actual audio returned by the application’s Sarvam `bulbul:v3` integration when the recorded farmer asks Madhu for guidance.
 - The current [OpenAI speech guide](https://developers.openai.com/api/docs/guides/text-to-speech) points new integrations toward Realtime. Model availability was checked on the configured account before generation. The [Realtime conversation guide](https://developers.openai.com/api/docs/guides/realtime-conversations) documents audio output and event handling.
 - [Scene text and timing](demo/scenes.json) and [voice metadata](demo/voice-provenance.json) accompany the artifact. Modest pitch-preserving speech timing adjustments align narration to chapters. The recording includes visible AI-voice and demo-data disclosure.
-- [Recorded workflow evidence](demo/workflow-evidence.json) lists the three actual generated offers and settled order. The recorder exercises actual UI actions. No API response mocks are used. The capture backend runs OpenAI negotiation and actual local Chronos inference. The underlying data is still synthetic.
-- Distance comparison is shown, **not live road routing**. No government key was configured, so the market reference is explicitly synthetic. Crop planning is a scenario, not an agricultural prescription. These boundaries are stated in the narration.
+- [Recorded workflow evidence](demo/workflow-evidence.json) lists the three actual generated offers and settled order. The recorder exercises actual UI actions, including the real XLSX upload, recorded negotiation replay and price chart, agreement confirmation, simulated escrow funding, Leaflet delivery playback, receipt and settlement. No API response mocks are used. The capture backend runs OpenAI negotiation and actual local Chronos inference. The underlying data is still synthetic.
+- The Leaflet map shows an **illustrative delivery route and simulated vehicle movement**, not live road routing, GPS or courier tracking. The separate mandi report displays 24 cached government records dated 19 October, with source provenance and unit cautions; it is not a continuously live feed. Crop planning is a scenario, not an agricultural prescription. These boundaries are stated in the narration.
 
 ## Reproduce safely on an isolated demo
 
@@ -65,7 +66,7 @@ node frontend/e2e/record-judges.mjs
 .venv/bin/python scripts/render-demo.py
 ```
 
-Voice generation incurs provider usage. Audio is cached in ignored `var/demo-production`; remove an individual cached narration WAV only when intentionally regenerating that scene. Keep scene text and audio in sync. Raw footage, service audio and intermediates stay outside Git. The final MP4, subtitles, script and provenance are published.
+Voice generation incurs provider usage. Audio is cached in ignored `var/demo-production`; each scene has a text hash so script changes regenerate only the changed narration. Keep scene text and audio in sync. Raw footage, service audio and intermediates stay outside Git. The final MP4, subtitles, script and provenance are published.
 
 ## Presenter’s fallback
 

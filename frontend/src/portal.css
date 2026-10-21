@@ -488,3 +488,276 @@
     padding: 9px;
   }
 }
+/* Clear participant-specific trading and delivery views. */
+.restaurant-workspace .farm-stat,
+.restaurant-workspace .hero-stamp {
+  display: none;
+}
+.negotiation-replay .panel-heading {
+  align-items: flex-start;
+  gap: 20px;
+}
+.negotiation-replay select {
+  display: block;
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #d7dfd1;
+  border-radius: 9px;
+  background: white;
+  max-width: 250px;
+}
+.replay-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.replay-grid svg {
+  width: 100%;
+  font: 11px system-ui;
+  fill: #34543f;
+}
+.trade-chat {
+  height: 290px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  background: #f2f5ed;
+  border-radius: 12px;
+}
+.trade-chat article {
+  padding: 12px 16px;
+  border: 1px solid #d8e1d0;
+  border-radius: 12px;
+  max-width: 88%;
+  background: white;
+  animation: trade-enter 0.4s ease;
+}
+.trade-chat article strong {
+  display: block;
+  margin-top: 7px;
+}
+.trade-chat p {
+  font-size: 12px;
+  margin: 7px 0;
+}
+.trade-chat .seller-message {
+  align-self: flex-end;
+  background: #234c3b;
+  color: #fff;
+}
+.replay-ready {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.agent-network {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 35px;
+}
+.agent-network p {
+  flex-basis: 100%;
+  text-align: center;
+}
+.negotiating-link {
+  width: 90px;
+  height: 2px;
+  background: linear-gradient(90deg, #b6cb8f, #285637);
+  animation: trade-pulse 1s infinite;
+}
+.agreement-scene {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 24px;
+  margin: 20px 0;
+  background: #edf3e3;
+  border: 1px solid #d4e4b8;
+  border-radius: 16px;
+  animation: trade-enter 0.65s ease;
+}
+.agreement-scene h3 {
+  margin: 7px 0;
+}
+.agreement-scene p {
+  margin: 0;
+  color: #62735a;
+  font-size: 13px;
+}
+.agreement-seal {
+  display: grid;
+  place-items: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: #d3e4aa;
+  flex-shrink: 0;
+}
+.escrow-vault {
+  margin-left: auto;
+  min-width: 170px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 1px solid #bed19d;
+  border-radius: 12px;
+}
+.escrow-vault strong {
+  font-size: 26px;
+}
+.funds-path {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+.secured .funds-path span:first-child {
+  animation: trade-pulse 1.5s 3;
+}
+.delivery-map {
+  height: 330px;
+  z-index: 0;
+  border-radius: 12px;
+  background: #eaf0df;
+}
+.delivery-truck {
+  font-size: 27px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 3px 12px #0003;
+}
+.delivery-section {
+  margin: 24px 0;
+  border-top: 1px solid #e0e4d8;
+  padding-top: 24px;
+}
+.delivery-controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.delivery-controls progress {
+  accent-color: #315c41;
+  flex: 1;
+  min-width: 100px;
+}
+.sheet-preview {
+  background: #f6f8f1;
+  border: 1px solid #d6dec8;
+  border-radius: 10px;
+  padding: 14px;
+  margin: 15px 0;
+}
+.sheet-preview th {
+  background: #234c3b;
+  color: white;
+  white-space: nowrap;
+}
+.sheet-preview td,
+.sheet-preview th {
+  padding: 10px;
+  border: 1px solid #d7dfd1;
+  font-size: 12px;
+}
+.table-scroll {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+.sheet-preview table {
+  border-collapse: collapse;
+}
+.sheet-preview p {
+  font-size: 12px;
+}
+.modal:has(.sheet-preview) {
+  max-width: 1050px;
+  width: 95vw;
+}
+@keyframes trade-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes trade-pulse {
+  50% {
+    opacity: 0.35;
+    transform: translateX(6px);
+  }
+}
+@media (max-width: 750px) {
+  .replay-grid {
+    grid-template-columns: 1fr;
+  }
+  .agreement-scene {
+    flex-wrap: wrap;
+  }
+  .escrow-vault {
+    margin-left: 0;
+  }
+  .negotiation-replay .panel-heading {
+    flex-direction: column;
+  }
+  .delivery-map {
+    height: 270px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trade-chat article,
+  .agreement-scene,
+  .negotiating-link,
+  .secured .funds-path span:first-child {
+    animation: none;
+  }
+}
+.government-provenance {
+  margin-bottom: 20px;
+}
+.government-provenance p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #66745f;
+}
+.price-search {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.price-search input {
+  padding: 12px;
+  border: 1px solid #d8dfcf;
+  border-radius: 8px;
+  max-width: 100%;
+  width: 330px;
+}
+.government-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.government-table th,
+.government-table td {
+  text-align: left;
+  padding: 16px;
+  border-bottom: 1px solid #e2e7db;
+  font-size: 14px;
+}
+.government-table th {
+  color: #718465;
+  font-size: 12px;
+}
+.government-table .badge {
+  margin-left: 12px;
+}

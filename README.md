@@ -9,10 +9,10 @@
 ![React 19](https://img.shields.io/badge/React-19-234c3b?style=flat-square)
 ![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.12-234c3b?style=flat-square)
 ![Chronos-2](https://img.shields.io/badge/Forecasting-Chronos--2-6a8051?style=flat-square)
-![Tests](https://img.shields.io/badge/Verified-35_tests-6a8051?style=flat-square)
+![Tests](https://img.shields.io/badge/Verified-60_tests-6a8051?style=flat-square)
 ![Prototype](https://img.shields.io/badge/Escrow-simulated-c39142?style=flat-square)
 
-[**Watch the 3:50 demo →**](docs/video/harvestlink-demo.mp4) · [Run it locally](#run-it-locally) · [Verification](docs/VERIFICATION.md) · [CSV samples](demo-data/README.md)
+[**Watch the 3:50 demo →**](docs/video/harvestlink-demo.mp4) · [Run it locally](#run-it-locally) · [Verification](docs/VERIFICATION.md) · [Upload samples](demo-data/README.md)
 
 </div>
 
@@ -35,8 +35,8 @@ HarvestLink connects those decisions in one working prototype. Restaurants forec
 | Why would a restaurant join? | See projected shortages, account for expiry, and purchase against explicit requirements |
 | What is the technical contribution? | Forecast-to-requirement-to-negotiation-to-reservation-to-inventory, with server-enforced constraints |
 | Where does AI help? | Chronos-2 consumption forecasts, optional OpenAI proposals, multilingual assistance and Sarvam speech |
-| What is verified? | 22 backend tests, 13 browser tests, actual Chronos inference, live OpenAI and Sarvam calls |
-| What remains a simulation? | Participants, histories, default market references, collection distances and all payments |
+| What is verified? | 45 backend tests, 15 browser tests, actual Chronos inference, live OpenAI and Sarvam calls |
+| What remains a simulation? | Participants, histories, demo trade references, collection distances and all payments |
 
 This is a hackathon prototype. It does **not** claim field validation, guaranteed better prices, or production financial infrastructure.
 
@@ -59,7 +59,7 @@ flowchart LR
 
 ![Farmer dashboard](docs/images/farmer-dashboard.png)
 
-List crop, variety, declared grade, kilograms, asking price and dates. Upload a CSV when there is more to enter. Imports validate every row before saving; malformed data does not partially overwrite the workspace.
+List crop, variety, declared grade, kilograms, asking price and dates. Upload an Excel workbook or CSV when there is more to enter. Excel uploads show a values-only preview before explicit import. Imports validate every row before saving; malformed data does not partially overwrite the workspace.
 
 The farmer and buyer choose their role at login and receive separate interfaces. English and ten Indian languages are available: Hindi, Kannada, Tamil, Telugu, Malayalam, Marathi, Gujarati, Bengali, Punjabi and Odia. Madhu, the honeybee assistant, replies in the selected language and uses **Sarvam Bulbul v3** for speech. Translation catalogs still need native-speaker review.
 
@@ -105,6 +105,14 @@ The farmer’s **What to grow next** view combines broad seasonal suitability, w
 
 Demand ranges are scenarios derived from recent usage—not purchase commitments, confidence intervals or validated seasonal forecasts. Location is captured for context; the prototype does not claim soil testing, hyperlocal climate modeling or agronomist approval. Method assumptions and agricultural references are available inside the view.
 
+![Excel harvest preview](docs/images/excel-preview.png)
+
+![Dated government prices](docs/images/mandi-report.png)
+
+## A trade you can follow
+
+Farmer and buyer navigation are separate. Farmers upload harvests, check dated government prices, compare offers and plan crops. Buyers manage inventory, review forecasts, set purchasing limits and confirm purchases. The negotiation view replays the actual recorded proposals as a price chart and message exchange. Only mutual agreement reveals the deal animation; simulated funding locks the demo balance. A Leaflet map then illustrates delivery without replacing pickup and receipt confirmations.
+
 ## What is real, what is simulated
 
 | Capability | Implementation and boundary |
@@ -113,12 +121,14 @@ Demand ranges are scenarios derived from recent usage—not purchase commitments
 | Negotiation | Reproducible local policy engine by default; optional credentialed OpenAI structured proposals; hard server-side validation in both modes |
 | Forecasting | Actual pretrained Chronos-2 inference on CPU; no fine-tuning; explicit baseline/failure status |
 | Voice help | OpenAI text assistance and Sarvam speech when configured; server-side credentials |
-| Mandi reference | Optional data.gov.in adapter; source and reporting date shown; no government key means labelled synthetic reference |
-| Nearby buyers | Seeded collection distances for comparison; **no live GPS, road routing or delivery integration** |
+| Mandi reference | Public Agmarknet dashboard snapshot: 24 commodities, reported 19 October 2026, retrieved 21 October. National FAQ aggregate, not local quotes or a continuous feed; original ₹/quintal and converted ₹/kg shown. Optional keyed data.gov.in adapter remains available. |
+| Nearby buyers and delivery | Seeded collection distances; Leaflet/OpenStreetMap with a user-played illustrative vehicle route. **No live GPS, calculated road routing or courier integration**; playback never changes order state. |
 | Crop planning | Explainable seasonal and demand scenarios, with assumptions and cautions |
 | Escrow | State-machine simulation only; no real funds |
 
 Direct purchasing may improve terms, but removing an intermediary does not remove transport, grading, spoilage or coordination costs. HarvestLink makes these decisions inspectable; it does not guarantee savings.
+
+![Delivery simulation with OpenStreetMap attribution](docs/images/delivery-simulation.png)
 
 ## Architecture you can inspect
 
@@ -131,7 +141,7 @@ flowchart TB
     API --> PLAN[Seasonal planner\nUsage evidence + constraints]
     API -. configured .-> OPENAI[OpenAI\nProposals / assistance / translation]
     API -. configured .-> SARVAM[Sarvam\nNative-language speech]
-    API -. configured .-> GOV[data.gov.in\nDated mandi reference]
+    API --> GOV[Public Agmarknet snapshot\nSource, reporting date and units]
 ```
 
 | Code | Responsibility |
@@ -185,7 +195,7 @@ DATA_GOV_API_KEY=
 
 Never put provider keys in frontend variables or commit them. OpenAI and Sarvam calls require valid credentials and incur provider usage. No key is needed for local policy negotiation. Government reference refresh must be treated as dated reporting, not a continuous exchange price.
 
-### Bring your own CSV
+### Bring your own Excel or CSV
 
 [Download and understand the sample files →](demo-data/README.md)
 
@@ -199,8 +209,8 @@ Use the in-app templates for current dates. Inventory imports append batches unl
 
 | Check | Recorded result |
 | --- | --- |
-| Backend suite | **22 passed** |
-| Browser suite | **13 passed** |
+| Backend suite | **45 passed** |
+| Browser suite | **15 passed** |
 | TypeScript / production build | Passed; Three.js chunk-size advisory remains |
 | Ruff / Python compile | Passed |
 | Independent UI audit | **8.4/10** engineering review; not a farmer field trial |

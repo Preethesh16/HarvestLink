@@ -1,7 +1,9 @@
 """Assemble recorded UI chapters and narrated audio into exactly 230 seconds."""
 
+import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -12,7 +14,8 @@ OUT = ROOT / "docs/video"
 OUT.mkdir(exist_ok=True)
 scenes = json.loads((ROOT / "docs/demo/scenes.json").read_text())
 timeline = json.loads((WORK / "timeline.json").read_text())
-assert len(scenes) == len(timeline) == 12
+assert len(scenes) == len(timeline)
+assert [s["id"] for s in scenes] == [t["id"] for t in timeline]
 assert sum(s["seconds"] for s in scenes) == 230
 
 
@@ -45,13 +48,13 @@ for s, t in zip(scenes, timeline):
     target = s["seconds"]
     audio = WORK / (s["id"] + ".wav")
     audio_duration = duration(audio)
-    voice_slot = target - 0.6 if s["id"] != "05-language" else 15.2
+    voice_slot = target - 0.6 if s["id"] != "06-language" else 5.4
     tempo = max(1, audio_duration / voice_slot)
     narration = WORK / (s["id"] + "-mix.wav")
-    if s["id"] == "05-language":
+    if s["id"] == "06-language":
         native = WORK / "sarvam.wav"
-        native_tempo = max(1, duration(native) / 6)
-        filt = f"[0:a]atempo={tempo:.6f},apad,atrim=duration=16[a];[1:a]atempo={native_tempo:.6f},afade=t=out:st=5.7:d=0.3,apad,atrim=duration=6[b];[a][b]concat=n=2:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=11[out]"
+        native_tempo = 1  # Full natural-speed native response.
+        filt = f"[0:a]atempo={tempo:.6f},apad,atrim=duration=6[a];[1:a]atempo={native_tempo:.6f},afade=t=out:st=13.7:d=0.3,apad,atrim=duration=14[b];[a][b]concat=n=2:v=0:a=1,loudnorm=I=-16:TP=-1.5:LRA=11[out]"
         run(
             [
                 "-i",
@@ -79,12 +82,24 @@ for s, t in zip(scenes, timeline):
                 narration,
             ]
         )
-    capture_duration = 10 if s["id"] == "05-language" else t["duration"]
-    ratio = min(1, target / capture_duration)
-    timing = f"setpts={ratio:.9f}*(PTS-STARTPTS)"
-    if s["id"] == "09-negotiation":
-        # Shorten the provider wait, preserve a readable offer comparison, then show selection.
-        timing = "setpts=PTS-STARTPTS,setpts='if(lt(T,11),0.3*T,if(lt(T,15),3.3+(T-11)*2.5,13.3+(T-15)*1.34))/TB'"
+    capture_duration = t["duration"]
+    keeps = t.get("keeps", [[0, capture_duration]])
+    kept_duration = sum(b - a for a, b in keeps)
+    ratio = min(1, target / kept_duration)
+    trims = ";".join(
+        f"[0:v]trim=start={a}:end={b},setpts=PTS-STARTPTS[v{i}]" for i, (a, b) in enumerate(keeps)
+    )
+    inputs = "".join(f"[v{i}]" for i in range(len(keeps)))
+    lead = target - 14 if s["id"] == "06-language" else target
+    ratio = min(1, lead / kept_duration)
+    timing = f"{trims};{inputs}concat=n={len(keeps)}:v=1:a=0[joined];[joined]setpts={ratio:.9f}*(PTS-STARTPTS),fps=30,tpad=stop_mode=clone:stop_duration={lead},trim=duration={lead},format=yuv420p"
+    extra_inputs = []
+    if s["id"] == "06-language":
+        # Hold the actual captured Kannada answer during the service's voice excerpt.
+        extra_inputs = ["-loop", "1", "-i", ROOT / "docs/images/kannada-workspace.png"]
+        timing += "[lead];[2:v]scale=1440:1000:force_original_aspect_ratio=decrease,pad=1440:1000:(ow-iw)/2:(oh-ih)/2:color=0x102e24,setsar=1,fps=30,trim=duration=14,setpts=PTS-STARTPTS,format=yuv420p[hold];[lead][hold]concat=n=2:v=1:a=0[outv]"
+    else:
+        timing += "[outv]"
     run(
         [
             "-ss",
@@ -95,10 +110,11 @@ for s, t in zip(scenes, timeline):
             WORK / t.get("video", "screen.webm"),
             "-i",
             narration,
-            "-vf",
-            f"{timing},fps=30,tpad=stop_mode=clone:stop_duration={target},trim=duration={target},format=yuv420p",
+            *extra_inputs,
+            "-filter_complex",
+            timing,
             "-map",
-            "0:v",
+            "[outv]",
             "-map",
             "1:a",
             "-t",
@@ -157,14 +173,14 @@ offset = 0
 for s in scenes:
     words = s["text"].split()
     chunks = [" ".join(words[i : i + 11]) for i in range(0, len(words), 11)]
-    span = s["seconds"] - 0.5 if s["id"] != "05-language" else 15.2
+    span = s["seconds"] - 0.5 if s["id"] != "06-language" else 5.4
     for i, c in enumerate(chunks):
         subtitles.append(
             f"{len(subtitles) + 1}\n{stamp(offset + i * span / len(chunks))} --> {stamp(offset + (i + 1) * span / len(chunks))}\n{c}\n"
         )
-    if s["id"] == "05-language":
+    if s["id"] == "06-language":
         subtitles.append(
-            f"{len(subtitles) + 1}\n{stamp(offset + 16)} --> {stamp(offset + 22)}\n[Sarvam Kannada voice: the farmer chooses after comparing offers.]\n"
+            f"{len(subtitles) + 1}\n{stamp(offset + 6)} --> {stamp(offset + 20)}\n[Actual Sarvam Kannada response: guidance on comparing buyer offers.]\n"
         )
     offset += s["seconds"]
 (OUT / "harvestlink-demo.srt").write_text("\n".join(subtitles))
@@ -208,3 +224,37 @@ run(
 assert abs(duration(OUT / "harvestlink-demo.mp4") - 230) < 0.001
 shutil.copy(WORK / "voice-provenance.json", ROOT / "docs/demo/voice-provenance.json")
 print("FINAL", duration(OUT / "harvestlink-demo.mp4"), "seconds")
+
+# Preserve machine-checkable evidence for the exact published file.
+video = OUT / "harvestlink-demo.mp4"
+verification = json.loads(
+    subprocess.check_output(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "stream=codec_name,width,height,start_time,duration:format=duration,size",
+            "-of",
+            "json",
+            str(video),
+        ]
+    )
+)
+verification["sha256"] = hashlib.sha256(video.read_bytes()).hexdigest()
+verification["chapters"] = len(scenes)
+verification["narration_checks"] = []
+for scene in scenes:
+
+    def normalize(text):
+        return re.sub(r"[^a-z0-9]+", "", text.lower())
+
+    transcript = (WORK / (scene["id"] + ".txt")).read_text()
+    matches = normalize(transcript) == normalize(scene["text"])
+    assert matches, "Narration transcript differs: " + scene["id"]
+    verification["narration_checks"].append(
+        {"scene": scene["id"], "normalized_script_matches": matches}
+    )
+verification["sarvam_response_seconds"] = duration(WORK / "sarvam.wav")
+verification["sarvam_presentation"] = "Full natural-speed response in a fourteen-second slot"
+(ROOT / "docs/demo/media-verification.json").write_text(json.dumps(verification, indent=2) + "\n")

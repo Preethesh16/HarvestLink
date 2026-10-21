@@ -280,3 +280,20 @@ Change log:
 - Assembled exactly 230.000 seconds of H.264/AAC video with OpenAI Marin narration, native Sarvam audio and embedded English subtitles. Verified all 12 narration transcripts against the script, stream durations, representative frames and audio peak −1.4 dBFS. Adjusted offer-comparison pacing for readability.
 
 - Final publication checks passed: 230.000-second video/audio streams, embedded subtitles, full FFmpeg decode without errors, reviewed offer comparison, all documentation links resolved, script lint/syntax checks and staged secret scan. README, refreshed captures, narration provenance and media checksum prepared for GitHub publication.
+
+## Role clarity, Excel onboarding and visible trade journey
+- [x] R1 — Separate buyer/farmer icons, language and dashboard content; retain buyer forecasting and purchasing only.
+- [x] R2 — Actual .xlsx harvest workbook, validated preview/upload, multi-crop government-price section with source/date and explicit disconnected state.
+- [x] R3 — Parcelwise-inspired negotiation replay/chart and mutual-agreement animation; Leaflet mapped delivery simulation with clear simulation label.
+- [x] R4 — Role isolation, spreadsheet validation and transaction-map regressions; refresh screenshots/docs.
+- [x] R5 — Re-record exactly 3:50 showing workbook upload → prices → buyers → negotiation → mutual agreement → mapped delivery, then buyer purchasing; publish.
+- User clarified the revised sequence and buyer-specific UI. Found shared positional sprout icons and farmer-only hero decoration on buyer overview. Government API key is currently missing; requested configuration while implementing remaining work.
+
+- User requested public-browser retrieval instead of supplying a government API key. Read the public Agmarknet dashboard:24 commodities, FAQ national aggregate, frozen through19 October 2026. Stored observed prices with retrieval/report dates and source units. Detailed daily report requires CAPTCHA and direct endpoints were unavailable; no bypass or invented data.
+- Replaced the farmer dashboard’s synthetic price card with a link to the dated government-price section. Buyer navigation now uses inventory/purchase icons and has no crop planner, harvest controls or farmer hero decoration.
+- Added actual Excel templates, bounded preview and explicit import. Independent regression review caught out-of-range rows/columns being truncated; reject oversized worksheet dimensions before parsing. All 45 backend tests pass.
+- Added recorded-round negotiation chart/chat, mutual-agreement animation and Leaflet delivery playback. Playback is illustrative and does not advance pickup/receipt/payment state.
+
+- Completed 15 browser journeys (12 initial passes plus 3 corrected-selector reruns) and 45 backend cases. Production build passes. Updated README/data guide to distinguish synthetic participant data from the real, dated government snapshot. Restarted live services without resetting workspace data; revised narrated recording is running only on isolated services.
+
+- Re-recorded 13 chapters with actual Excel upload, public government report, model-assisted offers, explicit approvals and mapped delivery. Final video/audio are exactly 230.000 seconds; full decode and all narration transcript checks pass. Preserved the entire Kannada response at natural speed. Updated screenshots, README and provenance. Generalized the import success message for Excel and CSV. Preparing the verified revision for GitHub publication.

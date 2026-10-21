@@ -2,6 +2,7 @@
 
 import asyncio
 import base64
+import hashlib
 import json
 import os
 import wave
@@ -21,7 +22,9 @@ MODEL = os.getenv("NARRATION_MODEL", "gpt-realtime-2.1")
 
 async def narrate(scene):
     dst = OUT / (scene["id"] + ".wav")
-    if dst.exists():
+    signature = hashlib.sha256(scene["text"].encode()).hexdigest()
+    cache = OUT / (scene["id"] + ".sha256")
+    if dst.exists() and cache.exists() and cache.read_text() == signature:
         return
     async with websockets.connect(
         "wss://api.openai.com/v1/realtime?model=" + MODEL,
@@ -84,6 +87,7 @@ async def narrate(scene):
             f.setframerate(24000)
             f.writeframes(pcm)
         (OUT / (scene["id"] + ".txt")).write_text(transcript)
+        cache.write_text(signature)
         print(scene["id"], round(len(pcm) / 48000, 2), "seconds", flush=True)
 
 

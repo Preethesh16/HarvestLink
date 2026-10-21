@@ -1,35 +1,160 @@
 {
-  "date": "2026-10-21",
-  "environment": "Isolated local prototype, synthetic data",
-  "negotiation_mode": {
+  "recorded_at": "2026-10-21T14:58:51.430Z",
+  "offers": [
+    {
+      "id": "offer_4c9c5626a2ad",
+      "lot_id": "lot_tomato",
+      "buyer": "r2",
+      "buyer_name": "Coastal Kitchen",
+      "quantity": 35,
+      "price": 26,
+      "total": 910,
+      "net": 910,
+      "transport_cost": 0,
+      "distance_km": 28,
+      "status": "active",
+      "rounds": [
+        {
+          "round": 1,
+          "speaker": "Coastal Kitchen",
+          "price": 25.5,
+          "message": "Offer for 35 kg, buyer collection."
+        },
+        {
+          "round": 1,
+          "speaker": "Farmer agent",
+          "price": 26,
+          "message": "Counteroffer; final buyer choice remains with the farmer."
+        },
+        {
+          "round": 1,
+          "speaker": "Coastal Kitchen",
+          "price": 26,
+          "message": "Provisional agreement, awaiting farmer selection."
+        }
+      ],
+      "mode": "openai",
+      "expires_at": "2026-10-21T15:27:40.708784+00:00"
+    },
+    {
+      "id": "offer_9a7993182bad",
+      "lot_id": "lot_tomato",
+      "buyer": "r3",
+      "buyer_name": "Roots & Grains",
+      "quantity": 25,
+      "price": 26,
+      "total": 650,
+      "net": 650,
+      "transport_cost": 0,
+      "distance_km": 48,
+      "status": "active",
+      "rounds": [
+        {
+          "round": 1,
+          "speaker": "Roots & Grains",
+          "price": 23.8,
+          "message": "Offer for 25 kg, buyer collection."
+        },
+        {
+          "round": 1,
+          "speaker": "Farmer agent",
+          "price": 26,
+          "message": "Counteroffer; final buyer choice remains with the farmer."
+        },
+        {
+          "round": 1,
+          "speaker": "Roots & Grains",
+          "price": 26,
+          "message": "Provisional agreement, awaiting farmer selection."
+        }
+      ],
+      "mode": "openai",
+      "expires_at": "2026-10-21T15:27:43.779558+00:00"
+    },
+    {
+      "id": "offer_0885122d4e06",
+      "lot_id": "lot_tomato",
+      "buyer": "r1",
+      "buyer_name": "The Green Table",
+      "quantity": 11,
+      "price": 28.9,
+      "total": 317.9,
+      "net": 317.9,
+      "transport_cost": 0,
+      "distance_km": 18,
+      "status": "selected",
+      "rounds": [
+        {
+          "round": 1,
+          "speaker": "The Green Table",
+          "price": 28.9,
+          "message": "Offer for 11 kg, buyer collection."
+        },
+        {
+          "round": 1,
+          "speaker": "Farmer agent",
+          "price": 28.9,
+          "message": "Counteroffer; final buyer choice remains with the farmer."
+        },
+        {
+          "round": 1,
+          "speaker": "The Green Table",
+          "price": 28.9,
+          "message": "Provisional agreement, awaiting farmer selection."
+        }
+      ],
+      "mode": "openai",
+      "expires_at": "2026-10-21T15:27:46.156918+00:00"
+    }
+  ],
+  "orders": [
+    {
+      "lot_id": "lot_tomato",
+      "buyer": "r1",
+      "buyer_name": "The Green Table",
+      "quantity": 11,
+      "price": 28.9,
+      "total": 317.9,
+      "id": "order_94c92d241dc7",
+      "offer_id": "offer_0885122d4e06",
+      "crop": "Tomato",
+      "status": "settled",
+      "delivery_date": "2026-10-21",
+      "expires_at": "2026-10-21T15:12:58.286238+00:00",
+      "timeline": [
+        {
+          "status": "awaiting_buyer",
+          "time": "2026-10-21T14:57:58.286248+00:00"
+        },
+        {
+          "status": "reserved",
+          "time": "2026-10-21T14:58:12.440143+00:00"
+        },
+        {
+          "status": "funded",
+          "time": "2026-10-21T14:58:16.239829+00:00"
+        },
+        {
+          "status": "picked_up",
+          "time": "2026-10-21T14:58:34.138751+00:00"
+        },
+        {
+          "status": "received",
+          "time": "2026-10-21T14:58:47.758615+00:00"
+        },
+        {
+          "status": "settled",
+          "time": "2026-10-21T14:58:49.994508+00:00"
+        }
+      ],
+      "funded_amount": 317.9,
+      "settled_amount": 317.9
+    }
+  ],
+  "mode": {
     "negotiation": "openai",
     "forecast": "chronos",
     "payments": "simulation",
-    "identity": "four session-scoped demo accounts \u2014 not production identity verification"
-  },
-  "offers": [
-    {
-      "buyer": "Coastal Kitchen",
-      "mode": "openai",
-      "quantity_kg": 35,
-      "price_inr_per_kg": 26.0
-    },
-    {
-      "buyer": "Roots & Grains",
-      "mode": "openai",
-      "quantity_kg": 25,
-      "price_inr_per_kg": 26.0
-    },
-    {
-      "buyer": "The Green Table",
-      "mode": "openai",
-      "quantity_kg": 11.0,
-      "price_inr_per_kg": 28.9
-    }
-  ],
-  "order_statuses": [
-    "settled"
-  ],
-  "money": "Simulated only",
-  "narration_transcript_match": "12 of 12 chapters matched scripted text after punctuation normalization"
+    "identity": "four session-scoped demo accounts — not production identity verification"
+  }
 }

@@ -664,3 +664,38 @@ def plan_crops(payload: Payload, x_actor: str = Header(default="farmer")):
     guard(actor_id(x_actor), "farmer")
     _, s = read()
     return crop_plan(s, payload.model_dump())
+
+
+@app.post("/api/spreadsheets/preview")
+def spreadsheet_preview(body: Payload, x_actor: str = Header(default="farmer")):
+    from backend.spreadsheets import preview
+
+    data = body.model_dump()
+    actor = actor_id(x_actor)
+    kind = str(data.get("kind", "harvest"))
+    if (actor == "farmer") != (kind == "harvest"):
+        raise HTTPException(403, "This workbook belongs to another workspace role")
+    return preview(str(data.get("content", "")), kind)
+
+
+@app.get("/api/templates/{kind}.xlsx")
+def spreadsheet_template(kind: str, x_actor: str = Header(default="farmer")):
+    from backend.spreadsheets import template
+
+    actor = actor_id(x_actor)
+    if (actor == "farmer") != (kind == "harvest"):
+        raise HTTPException(403, "This workbook belongs to another workspace role")
+    return Response(
+        template(kind),
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{kind}.xlsx"'},
+    )
+
+
+@app.get("/api/market/catalog")
+def government_catalog(x_actor: str = Header(default="farmer")):
+    guard(actor_id(x_actor), "farmer")
+    path = Path(__file__).resolve().parents[1] / "demo-data" / "government-prices.json"
+    if not path.exists():
+        raise HTTPException(503, "Government report has not been retrieved yet")
+    return json.loads(path.read_text())

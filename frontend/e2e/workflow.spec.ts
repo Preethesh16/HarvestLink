@@ -50,7 +50,7 @@ test("farmer listing and three-buyer trade through settlement", async ({
   await loginAs(page, "farmer");
   await page.getByRole("button", { name: "Orders", exact: true }).click();
   await page.getByRole("button", { name: "Release simulated funds" }).click();
-  await expect(page.locator(".order .badge")).toHaveText("settled");
+  await expect(page.locator(".order .badge").first()).toHaveText("settled");
   await page.screenshot({
     path: "../docs/images/order-settled.png",
     fullPage: true,
@@ -85,7 +85,7 @@ test("buyer forecasting, CSV validation and private policy", async ({
     await dialog
       .getByRole("button", { name: /Approve|Create|Confirm/ })
       .click();
-  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await page.getByRole("button", { name: "Import Excel / CSV", exact: true }).click();
   await page
     .getByLabel("CSV contents")
     .fill("crop,quantity,unit,usable_until\nTomato,NaN,kg,2026-12-31");
@@ -117,7 +117,7 @@ test("mobile layout and accessible controls", async ({ page }) => {
   await page.waitForTimeout(1200);
   await page.screenshot({ path: "../docs/images/mobile.png", fullPage: true });
   await page.getByRole("button", { name: "My harvest", exact: true }).click();
-  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await page.getByRole("button", { name: "Import Excel / CSV", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
   expect(
     await page.evaluate(
@@ -131,7 +131,7 @@ test("successful farmer and restaurant CSV onboarding", async ({
 }) => {
   await page.goto("/");
   await page.getByRole("button", { name: "My harvest", exact: true }).click();
-  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await page.getByRole("button", { name: "Import Excel / CSV", exact: true }).click();
   const harvest = await (
     await page.request.get(API + "/api/templates/harvest.csv")
   ).text();
@@ -144,7 +144,7 @@ test("successful farmer and restaurant CSV onboarding", async ({
   await page
     .getByRole("button", { name: "Inventory & forecast", exact: true })
     .click();
-  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await page.getByRole("button", { name: "Import Excel / CSV", exact: true }).click();
   const inventory = await (
     await page.request.get(API + "/api/templates/inventory.csv")
   ).text();
@@ -153,10 +153,10 @@ test("successful farmer and restaurant CSV onboarding", async ({
   await page.getByRole("button", { name: "Validate & import" }).click();
   await expect(page.locator("tbody tr")).toHaveCount(1);
   await expect(page.locator("tbody")).toContainText("20 kg");
-  await page.getByRole("button", { name: "Import CSV", exact: true }).click();
+  await page.getByRole("button", { name: "Import Excel / CSV", exact: true }).click();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect(
-    page.getByRole("button", { name: "Import CSV", exact: true }),
+    page.getByRole("button", { name: "Import Excel / CSV", exact: true }),
   ).toBeFocused();
 });

@@ -4,8 +4,8 @@ Executed locally on 21 October 2026.
 
 | Check | Result |
 | --- | --- |
-| Backend pytest suite | 22 passed |
-| Playwright browser suite | 13 passed |
+| Backend pytest suite | 45 passed |
+| Playwright browser suite | 15 passed |
 | TypeScript + Vite production build | Passed; lazy Three.js chunk size advisory |
 | Ruff static checks | Passed |
 | Python compile check | Passed |
@@ -51,4 +51,14 @@ Final combined audit: **22 backend tests +13 browser tests pass**. The actual ca
 
 The 3:50 walkthrough uses actual UI actions on an isolated database. Three OpenAI-mode offers were generated; the chosen 11 kg Green Table order reached `settled`. Chronos inference and Kannada Sarvam speech succeeded. No browser exceptions were captured in the completed recording. Public evidence is in [workflow-evidence.json](demo/workflow-evidence.json).
 
-OpenAI `gpt-realtime-2.1` with Marin generated the English narration. All 12 returned audio transcripts matched the scripted text after punctuation normalization. The finished H.264/AAC MP4 is 1440×1000 at 30 fps, with embedded optional English subtitles and visible AI-voice disclosure. FFprobe confirmed 230.000 seconds for both video and audio. Audio peak was−1.4 dBFS (no clipping); representative frames were visually reviewed. Recording wait time is edited; synthetic data, simulated funds and illustrative distances remain explicitly disclosed.
+OpenAI `gpt-realtime-2.1` with Marin generated the English narration. All 13 returned audio transcripts matched the scripted text after punctuation normalization. The finished H.264/AAC MP4 is 1440×1000 at 30 fps, with embedded optional English subtitles and visible AI-voice disclosure. FFprobe confirmed 230.000 seconds for both video and audio. Audio peak was −0.5 dBFS (no clipping); representative frames were visually reviewed. Recording wait time is edited; synthetic data, simulated funds and illustrative distances remain explicitly disclosed.
+
+## Excel, role separation and visible delivery revision
+
+45 backend tests and 15 browser journeys pass. The first browser run passed 12 journeys; three selectors were updated for the new heading/status/progress elements and all three reruns passed. Independent backend review added 23 spreadsheet and access cases, exposing silent truncation outside the accepted worksheet bounds. The parser now rejects excess dimensions rather than dropping data. Valid Excel previews preserve Unicode, dates and CSV quoting; invalid headers, formulas, macro/archive limits and extra cells are rejected. Preview never imports or changes stock.
+
+Browser checks verify actual four-row Excel upload, dated Agmarknet figures, missing-crop disclosure, absence of farmer controls/artwork in buyer navigation, negotiation replay visibility and a full simulated route. Reaching 100% delivery playback leaves the order funded; role-specific confirmation is still needed to advance it. The existing full settlement journey also passes. Map tiles rendered successfully during screenshot review. The map is illustrative, not calculated road routing or live GPS.
+
+The public government homepage was read in a browser on21 October 2026:24 published commodities, all states/markets, FAQ grade, frozen through19 October 2026, INR/quintal. Captured values and provenance live in `demo-data/government-prices.json`. The app shows the checked-in dated snapshot and a link to the latest official report; it does not claim automatic refresh. Missing harvest-crop quotes remain unavailable.
+
+The revised 13-chapter video is exactly 230.000 seconds for both audio and video. All 13 English narration transcripts match the script; the full 13.312-second Kannada response is preserved at natural speed. Full FFmpeg decode passes, audio peak is −0.5 dBFS, and workbook, negotiation, agreement and moving-vehicle frames were reviewed. The completed recording captured no browser exceptions.
