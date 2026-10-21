@@ -694,8 +694,21 @@ def spreadsheet_template(kind: str, x_actor: str = Header(default="farmer")):
 
 @app.get("/api/market/catalog")
 def government_catalog(x_actor: str = Header(default="farmer")):
+    from backend import market
+
     guard(actor_id(x_actor), "farmer")
-    path = Path(__file__).resolve().parents[1] / "demo-data" / "government-prices.json"
-    if not path.exists():
-        raise HTTPException(503, "Government report has not been retrieved yet")
-    return json.loads(path.read_text())
+    return market.load(
+        DB.with_suffix(".market.json"),
+        Path(__file__).resolve().parents[1] / "demo-data/government-prices.json",
+    )
+
+
+@app.post("/api/market/catalog/refresh")
+def refresh_government_catalog(x_actor: str = Header(default="farmer")):
+    from backend import market
+
+    guard(actor_id(x_actor), "farmer")
+    try:
+        return market.refresh(DB.with_suffix(".market.json"))
+    except ValueError as exc:
+        raise HTTPException(503, str(exc)) from exc

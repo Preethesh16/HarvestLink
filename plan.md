@@ -302,3 +302,13 @@ Change log:
 - [x] V1 — Replace the mandi narration with positive, accurate wording: original government-published Agmarknet data, retaining its19October reporting date. Regenerate that voice segment and subtitles, verify230-second output and publish. A dated snapshot must not be described as a real-time feed.
 
 - Regenerated only the mandi voice segment, rebuilt synchronized subtitles and video, and verified exactly230.000seconds plus all13 transcript matches. Publishing the narration revision.
+
+## Fetch current public market reports
+- [x] M1 — Implement a public Agmarknet report collector with validated dates/units, bounded requests and last-successful cache.
+- [x] M2 — Add automatic refresh on market-page visit and a manual refresh button, with honest cached/failure/reporting-date states.
+- [ ] M3 — Verify a real upstream fetch, cache/failure/authentication tests and UI behavior; document and publish.
+
+- Added server-side data.gov.in and public-dashboard collectors, atomic runtime cache, 15-minute reuse and failure cooldown. Added farmer-only refresh route plus automatic-on-visit and manual UI controls. Reporting dates, markets and source units remain explicit.
+- All 55 backend tests and the new mocked UI failure/success regression pass. Real external attempts failed: direct Agmarknet HTTP403, automated report controls unavailable, and tested NHB reports empty. A successful real refresh remains blocked pending upstream access or DATA_GOV_API_KEY; the app preserves its genuine dated bootstrap report.
+
+- Production build and three relevant browser regressions pass. Publishing the refresh implementation with M3 left open specifically for successful external connectivity; no automatic-fetch success is claimed.

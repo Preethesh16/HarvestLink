@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExternalLink, Search } from "lucide-react";
+import { ExternalLink, Search, RefreshCw } from "lucide-react";
 import { useLocale } from "./Locale";
 type Row = Record<string, any>;
 export default function MarketPrices({ crops }: { crops: string[] }) {
@@ -7,13 +7,45 @@ export default function MarketPrices({ crops }: { crops: string[] }) {
   const [report, setReport] = useState<Row | null>(null),
     [error, setError] = useState(""),
     [query, setQuery] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [notice, setNotice] = useState("");
+  async function refresh() {
+    setRefreshing(true);
+    setError("");
+    setNotice("");
+    try {
+      const r = await fetch("/api/market/catalog/refresh", { method: "POST" });
+      const d = await r.json();
+      if (!r.ok)
+        throw Error(
+          d.detail || "Government refresh failed; saved prices retained.",
+        );
+      setReport(d);
+      setNotice(
+        d.refresh_result === "recent_cache"
+          ? "Checked recently. Government requests are limited to once every 15 minutes."
+          : "Government report fetched successfully. Check the publication date on each row.",
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setRefreshing(false);
+    }
+  }
   useEffect(() => {
     let active = true;
     fetch("/api/market/catalog")
       .then(async (r) => {
         const d = await r.json();
         if (!r.ok) throw Error(d.detail);
-        if (active) setReport(d);
+        if (active) {
+          setReport(d);
+          if (
+            d.status !== "fetched_government_report" ||
+            Date.now() - Date.parse(d.retrieved_at) > 900000
+          )
+            void refresh();
+        }
       })
       .catch((e) => {
         if (active) setError(e.message);
@@ -48,7 +80,7 @@ export default function MarketPrices({ crops }: { crops: string[] }) {
         </div>
         <a
           className="button secondary"
-          href="https://agmarknet.gov.in/home"
+          href={report?.source_url || "https://agmarknet.gov.in/home"}
           target="_blank"
           rel="noreferrer"
         >
@@ -56,7 +88,31 @@ export default function MarketPrices({ crops }: { crops: string[] }) {
           <ExternalLink size={16} />
         </a>
       </div>
-      {error && <p role="alert">{error}</p>}
+      <div className="panel-heading">
+        <button
+          className="button secondary"
+          disabled={refreshing}
+          onClick={refresh}
+        >
+          <RefreshCw size={16} />
+          {tr(
+            refreshing
+              ? "Fetching government prices…"
+              : "Refresh government prices",
+          )}
+        </button>
+        <small>
+          {tr(
+            "Refreshes on page visit when older than 15 minutes. Publication dates may lag behind today.",
+          )}
+        </small>
+      </div>
+      {notice && <p role="status">{tr(notice)}</p>}
+      {error && (
+        <p className="alert" role="alert">
+          {tr(error)}
+        </p>
+      )}
       {!report && !error && (
         <p role="status">{tr("Loading price reference…")}</p>
       )}
@@ -70,11 +126,15 @@ export default function MarketPrices({ crops }: { crops: string[] }) {
             </p>
             <p>{report.coverage}</p>
             <span className="badge amber">
-              {tr("Dated government snapshot · not a live quote")}
+              {tr(
+                report.status === "fetched_government_report"
+                  ? "Fetched government report · published prices"
+                  : "Saved government snapshot · refresh not yet verified",
+              )}
             </span>
             <p>
               {tr(
-                "Original prices are ₹ per quintal. The ₹/kg column divides by 100. Local market, grade and transport costs can differ.",
+                "₹/kg is calculated only when the source unit is confirmed as quintal. Missing units are never guessed. Local market, grade and transport costs can differ.",
               )}
             </p>
           </section>
@@ -93,16 +153,22 @@ export default function MarketPrices({ crops }: { crops: string[] }) {
                 <thead>
                   <tr>
                     <th>{tr("Commodity")}</th>
-                    <th>{tr("Government price · ₹/quintal")}</th>
+                    <th>{tr("Market / reporting date")}</th>
+                    <th>{tr("Published price / source unit")}</th>
                     <th>{tr("Equivalent · ₹/kg")}</th>
-                    <th>{report.previous_reporting_date} · ₹/quintal</th>
+                    <th>
+                      {report.provider === "data_gov_api"
+                        ? tr("Min / max · source unit")
+                        : `${report.previous_reporting_date} · ₹/quintal`}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.map((r) => (
-                    <tr key={r.commodity}>
+                  {filtered.map((r, index) => (
+                    <tr key={`${r.commodity}-${r.market}-${index}`}>
                       <td>
                         <strong>{r.commodity}</strong>
+                        {r.variety && <small> · {r.variety}</small>}
                         {crops.some(
                           (c) => c.toLowerCase() === r.commodity.toLowerCase(),
                         ) && (
@@ -110,9 +176,20 @@ export default function MarketPrices({ crops }: { crops: string[] }) {
                         )}
                       </td>
                       <td>
-                        {r.price_quintal === null
+                        {r.market || "All markets (national aggregate)"}
+                        <br />
+                        <small>
+                          {r.reporting_date || report.reporting_date}
+                        </small>
+                      </td>
+                      <td>
+                        {r.reported_price == null && r.price_quintal == null
                           ? "—"
-                          : Number(r.price_quintal).toLocaleString("en-IN")}
+                          : Number(
+                              r.reported_price ?? r.price_quintal,
+                            ).toLocaleString("en-IN")}
+                        <br />
+                        <small>{r.source_unit || "INR per quintal"}</small>
                       </td>
                       <td>
                         {r.price_quintal === null
@@ -120,11 +197,13 @@ export default function MarketPrices({ crops }: { crops: string[] }) {
                           : (r.price_quintal / 100).toFixed(2)}
                       </td>
                       <td>
-                        {r.previous_price_quintal === null
-                          ? "—"
-                          : Number(r.previous_price_quintal).toLocaleString(
-                              "en-IN",
-                            )}
+                        {report.provider === "data_gov_api"
+                          ? `${r.min_price ?? "—"} / ${r.max_price ?? "—"}`
+                          : r.previous_price_quintal == null
+                            ? "—"
+                            : Number(r.previous_price_quintal).toLocaleString(
+                                "en-IN",
+                              )}
                       </td>
                     </tr>
                   ))}

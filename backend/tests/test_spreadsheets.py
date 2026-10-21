@@ -107,6 +107,7 @@ def test_spreadsheet_endpoints_require_session(client):
     assert client.get('/api/templates/harvest.xlsx').status_code == 401
     assert client.post('/api/spreadsheets/preview', json={'kind': 'harvest'}).status_code == 401
     assert client.get('/api/market/catalog').status_code == 401
+    assert client.post('/api/market/catalog/refresh').status_code == 401
 
 
 @pytest.mark.parametrize('username,allowed,forbidden', [
@@ -128,6 +129,7 @@ def test_workbook_roles_enforced_for_templates_and_preview(client, username, all
             assert 'spreadsheetml' in downloaded.headers['content-type']
     if username != 'farmer':
         assert client.get('/api/market/catalog').status_code == 403
+        assert client.post('/api/market/catalog/refresh').status_code == 403
         assert client.get('/api/market/catalog', headers={'X-Actor': 'farmer'}).status_code == 403
 
 
@@ -153,6 +155,7 @@ def test_farmer_catalog_returns_report_without_buyer_access(client, tmp_path, mo
     client.post('/api/auth/logout')
     login(client, 'restaurant3')
     assert client.get('/api/market/catalog').status_code == 403
+    assert client.post('/api/market/catalog/refresh').status_code == 403
 
 
 def test_successful_preview_is_not_an_import(client):

@@ -62,3 +62,7 @@ Browser checks verify actual four-row Excel upload, dated Agmarknet figures, mis
 The public government homepage was read in a browser on21 October 2026:24 published commodities, all states/markets, FAQ grade, frozen through19 October 2026, INR/quintal. Captured values and provenance live in `demo-data/government-prices.json`. The app shows the checked-in dated snapshot and a link to the latest official report; it does not claim automatic refresh. Missing harvest-crop quotes remain unavailable.
 
 The revised 13-chapter video is exactly 230.000 seconds for both audio and video. All 13 English narration transcripts match the script; the full 13.312-second Kannada response is preserved at natural speed. Full FFmpeg decode passes, audio peak is −0.5 dBFS, and workbook, negotiation, agreement and moving-vehicle frames were reviewed. The completed recording captured no browser exceptions.
+
+## Automatic market refresh
+
+55 backend tests pass, including 10 new market-cache/parser cases. A browser regression passes for saved-price retention on refresh failure and updating source/date/price after a mocked successful retry. The official external fetch is not verified successful: direct Agmarknet requests returned403 and the automated public report failed to load. No data.gov.in API key is configured. This is an explicit connectivity limitation, not a passing live-feed test. See [market data setup](MARKET-DATA.md).

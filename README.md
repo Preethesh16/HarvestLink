@@ -121,7 +121,7 @@ Farmer and buyer navigation are separate. Farmers upload harvests, check dated g
 | Negotiation | Reproducible local policy engine by default; optional credentialed OpenAI structured proposals; hard server-side validation in both modes |
 | Forecasting | Actual pretrained Chronos-2 inference on CPU; no fine-tuning; explicit baseline/failure status |
 | Voice help | OpenAI text assistance and Sarvam speech when configured; server-side credentials |
-| Mandi reference | Public Agmarknet dashboard snapshot: 24 commodities, reported 19 October 2026, retrieved 21 October. National FAQ aggregate, not local quotes or a continuous feed; original ₹/quintal and converted ₹/kg shown. Optional keyed data.gov.in adapter remains available. |
+| Mandi reference | Refresh-on-visit and manual refresh, official data.gov.in adapter or public-page collector, atomic last-successful cache. **Automatic external refresh remains unverified on this machine**: public requests are blocked and an API key is not configured. [Setup and evidence](docs/MARKET-DATA.md). |
 | Nearby buyers and delivery | Seeded collection distances; Leaflet/OpenStreetMap with a user-played illustrative vehicle route. **No live GPS, calculated road routing or courier integration**; playback never changes order state. |
 | Crop planning | Explainable seasonal and demand scenarios, with assumptions and cautions |
 | Escrow | State-machine simulation only; no real funds |
