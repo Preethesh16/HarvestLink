@@ -1,0 +1,28 @@
+{
+  "programs": [],
+  "stream_groups": [],
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1440,
+      "height": 1000,
+      "start_time": "0.000000",
+      "duration": "230.000000"
+    },
+    {
+      "codec_name": "aac",
+      "start_time": "0.000000",
+      "duration": "230.000000"
+    },
+    {
+      "codec_name": "mov_text",
+      "start_time": "0.000000",
+      "duration": "229.500000"
+    }
+  ],
+  "format": {
+    "duration": "230.000000",
+    "size": "13582401"
+  },
+  "sha256": "db06b2443ac335b1b0f6abb6157558ad526332f2cd92c6eb465496bd6a27b756"
+}

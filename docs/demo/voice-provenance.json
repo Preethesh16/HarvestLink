@@ -1,0 +1,7 @@
+{
+  "provider": "OpenAI",
+  "model": "gpt-realtime-2.1",
+  "voice": "marin",
+  "api": "Realtime WebSocket",
+  "disclosure": "AI-generated narration"
+}

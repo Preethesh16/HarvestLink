@@ -263,9 +263,20 @@ Change log:
 - Removed overlapping control strip; farm supports direct dragging, gentle idle movement and keyboard manipulation. Fixed mobile menu discoverability by wrapping destinations, and removed invisible dashboard3D rendering.
 
 ## Queued after the current verification goal
-- [ ] Q1 — Rewrite README for judges and technical evaluators: problem/solution, evidence, architecture, setup, feature provenance and limitations.
-- [ ] Q2 — Create a230-second screen-recorded demo with current OpenAI natural voice narration, synchronized to authentic UI actions.
-- [ ] Q3 — Cover onboarding, farmer CSV/rules/offers, mutual agreement and simulated escrow, native-language helper, seasonal planning, nearby buyers, restaurant inventory/forecast/rules/purchase and completion; verify audio/video duration and publish.
+- [x] Q1 — Rewrite README for judges and technical evaluators: problem/solution, evidence, architecture, setup, feature provenance and limitations.
+- [x] Q2 — Create a230-second screen-recorded demo with current OpenAI natural voice narration, synchronized to authentic UI actions.
+- [x] Q3 — Cover onboarding, farmer CSV/rules/offers, mutual agreement and simulated escrow, native-language helper, seasonal planning, nearby buyers, restaurant inventory/forecast/rules/purchase and completion; verify audio/video duration and publish.
 - User requested this as sequential work after the current testing goal. Do not label illustrative distance as real road routing or simulated escrow as real money.
 
 - Verification goal satisfied:22 backend tests and13 browser journeys pass, covering all accounts, role choice, accessibility, mobile layout, forecast data states, crop planning and direct3D rotation. Independent UI rating8.4/10; no real field trial claimed.
+
+- Began queued publication work after completing the verification goal. Restructured README around PS1.2, the complete trade, inspectable evidence, clear setup and actual integration boundaries.
+- Verified current OpenAI voice documentation and account access; selected gpt-realtime-2.1 with Marin through the Realtime API. Narration and recording disclose synthetic voice and demo data.
+- Recording uses isolated 8001/5174 services with actual OpenAI negotiation, Chronos inference and Sarvam speech; live workspace data is preserved.
+
+- Captured real three-buyer OpenAI proposals and a completed 11 kg Green Table order through simulated settlement. Saved public workflow evidence without credentials. Recorded actual Kannada Sarvam speech.
+- Corrected recorder assumptions about the forecast purchase button and resumed from the restaurant chapter. All final recorded UI actions completed without browser exceptions; failed recording takes are excluded.
+
+- Assembled exactly 230.000 seconds of H.264/AAC video with OpenAI Marin narration, native Sarvam audio and embedded English subtitles. Verified all 12 narration transcripts against the script, stream durations, representative frames and audio peak −1.4 dBFS. Adjusted offer-comparison pacing for readability.
+
+- Final publication checks passed: 230.000-second video/audio streams, embedded subtitles, full FFmpeg decode without errors, reviewed offer comparison, all documentation links resolved, script lint/syntax checks and staged secret scan. README, refreshed captures, narration provenance and media checksum prepared for GitHub publication.

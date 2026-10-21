@@ -46,3 +46,9 @@ The farmer-only crop planner is an explainable shortlist, not a trained crop-yie
 Independent UI rubric: **8.4/10** for this hackathon demo (visual hierarchy8.5, task clarity8.5, mobile8, keyboard8.5, feedback/data honesty8.5). This is an engineering/browser review, not a trial with actual farmers. Remaining limitations include native-speaker review and some technical inventory labels.
 
 Final combined audit: **22 backend tests +13 browser tests pass**. The actual canvas image changes after keyboard rotation; direct pointer dragging and reset are covered with reduced motion enabled.
+
+## Narrated publication demo
+
+The 3:50 walkthrough uses actual UI actions on an isolated database. Three OpenAI-mode offers were generated; the chosen 11 kg Green Table order reached `settled`. Chronos inference and Kannada Sarvam speech succeeded. No browser exceptions were captured in the completed recording. Public evidence is in [workflow-evidence.json](demo/workflow-evidence.json).
+
+OpenAI `gpt-realtime-2.1` with Marin generated the English narration. All 12 returned audio transcripts matched the scripted text after punctuation normalization. The finished H.264/AAC MP4 is 1440×1000 at 30 fps, with embedded optional English subtitles and visible AI-voice disclosure. FFprobe confirmed 230.000 seconds for both video and audio. Audio peak was−1.4 dBFS (no clipping); representative frames were visually reviewed. Recording wait time is edited; synthetic data, simulated funds and illustrative distances remain explicitly disclosed.

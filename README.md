@@ -4,210 +4,233 @@
 
 ### A better harvest. A better deal.
 
-**Farmer-first trading, from a restaurant’s next shortage to a grower’s next confirmed sale.**
+**From a kitchen’s next shortage to a farmer’s next confirmed sale.**
 
-![Python](https://img.shields.io/badge/Python-3.12-234c3b?style=flat-square)
-![React](https://img.shields.io/badge/React-19-234c3b?style=flat-square)
-![Three.js](https://img.shields.io/badge/Three.js-procedural_farm-6a8051?style=flat-square)
-![Forecasting](https://img.shields.io/badge/Forecasting-Chronos--2-6a8051?style=flat-square)
-![Demo](https://img.shields.io/badge/Payments-simulated-c39142?style=flat-square)
+![React 19](https://img.shields.io/badge/React-19-234c3b?style=flat-square)
+![FastAPI](https://img.shields.io/badge/FastAPI-Python_3.12-234c3b?style=flat-square)
+![Chronos-2](https://img.shields.io/badge/Forecasting-Chronos--2-6a8051?style=flat-square)
+![Tests](https://img.shields.io/badge/Verified-35_tests-6a8051?style=flat-square)
+![Prototype](https://img.shields.io/badge/Escrow-simulated-c39142?style=flat-square)
 
-[See the demo](docs/video/harvestlink-demo.mp4) · [Run locally](#run-locally) · [Upload CSVs](demo-data/README.md) · [Living build plan](plan.md)
+[**Watch the 3:50 demo →**](docs/video/harvestlink-demo.mp4) · [Run it locally](#run-it-locally) · [Verification](docs/VERIFICATION.md) · [CSV samples](demo-data/README.md)
 
 </div>
 
-![HarvestLink farmer workspace with a procedural Three.js farm](docs/images/farmer-dashboard.png)
+![HarvestLink’s interactive agricultural entrance](docs/images/landing.png)
 
-A grower has produce ready. A restaurant will run short. HarvestLink brings those decisions together: forecast consumption, account for usable stock, find a harvest, negotiate within private limits, and let the **farmer choose the buyer**.
+**DevHack · PS 1.2 — Direct Market-Access Platform for Marginal Farmers**
 
-Built as a fresh prototype for **DevHack’s PS 1.2 — Direct Market-Access Platform for Marginal Farmers**. Inception and Parcelwise informed the design direction; this application is a new implementation.
+A farmer has produce ready today. A restaurant will run short tomorrow. Between them are unanswered questions: *Who needs this crop? What terms work for both sides? Will the stock arrive before it is needed? Who makes the final decision?*
 
-| Demo network | Decision maker | Forecast | Payment |
-| --- | --- | --- | --- |
-| One farm, three restaurants | Farmer selects; buyer confirms | Seven-day consumption outlook | Explicit simulation; no money moves |
+HarvestLink connects those decisions in one working prototype. Restaurants forecast consumption and approve requirements. Farmers list harvests, compare bounded agent offers, and choose a buyer. Both parties confirm before a traceable, simulated payment and delivery workflow begins.
 
-## A complete trade, with people in control
+> **Agents negotiate. People agree. The farmer keeps the final choice.**
 
-1. **List the harvest.** Add crop, variety, declared grade, kilograms, asking price and dates—or upload a CSV.
-2. **Plan the kitchen.** Forecast ingredient consumption and project batches in earliest-usable-until order. Stock expected to deteriorate cannot cover future demand.
-3. **Approve a requirement.** The restaurant chooses a purchase quantity and sets its agent’s private limits.
-4. **Negotiate within boundaries.** Separate participant policies guide offers and counteroffers. The server validates price, budget, quantity, service radius and availability.
-5. **Choose a buyer.** The farmer compares eligible offers and explicitly selects one. No agent accepts a sale on the farmer’s behalf.
-6. **Confirm and reserve.** The selected restaurant confirms the agreement. An atomic transaction reserves the quantity; expired unfunded reservations release it.
-7. **Follow the order.** Simulated funding, pickup, receipt and settlement advance through explicit participant actions. Receipt adds a new restaurant inventory batch.
+## The project in 60 seconds
 
-### Offers you can inspect
-
-![Three restaurants competing for a farmer’s harvest](docs/images/negotiation.png)
-
-Each restaurant has its own budget and quantity. Offers show unit price, quantity, gross return, buyer collection and actual generated negotiation steps. The default **local policy engine** is labelled; it is not presented as a live LLM conversation. An optional OpenAI adapter requests structured proposals with only the participating agent’s own private limits and public offer terms.
-
-An offer is provisional. Changing a policy invalidates its outstanding offers. Confirmation rechecks current limits and inventory. The system can return **no acceptable deal**.
-
-### Forecasts that explain their limits
-
-![Restaurant consumption forecast and expiry-aware purchase recommendation](docs/images/restaurant-forecast.png)
-
-Chronos-2 predicts consumption; deterministic inventory logic calculates shortages and replenishment. The model is pretrained and used without fine-tuning.
-
-- Ninety days of seeded, synthetic consumption per restaurant.
-- Seven forecast days, a one-day planning lead time and a three-day replenishment window.
-- Consumption is separate from recorded waste. Stockout-censored or missing observations are not automatically treated as zero demand.
-- Batches are consumed in earliest-usable-until order. Confirmed, funded incoming orders contribute to the projection; unfunded agreements do not.
-- A held-out week compares Chronos with a weekday seasonal-naive baseline. The UI also exposes model quantiles.
-
-**Observed local result for the seeded Restaurant A history:** Chronos MAE **0.598 kg**, seasonal-naive MAE **0.469 kg** over seven held-out days. The simpler baseline did better on this example. This is synthetic demonstration evidence, not validation on real restaurant operations. Model versions and reruns can affect outputs.
-
-Produce usable-until dates and the three-day shelf-life assumption for received demo stock are planning inputs, **not food-safety certification**. Forecasting currently demonstrates Tomato; the marketplace supports additional produce listings, but multi-crop forecast orchestration is not claimed.
-
-### A visible order lifecycle
-
-![Completed agreement and simulated order stages](docs/images/order-settled.png)
-
-The order timeline separates agreement, reservation, simulated funding, pickup, receipt and settlement. Repeated commands cannot double-reserve stock or duplicate receipt. Cancellation before pickup releases reservations and records a simulated refund where applicable. Real escrow, payment custody, bank settlement and dispute arbitration are not connected.
-
-## Run locally
-
-Prerequisites: **Node.js 20.19+**, npm, and [uv](https://docs.astral.sh/uv/). `uv` provisions Python 3.12. CPU PyTorch and the Chronos model require additional disk space; first-time downloads are substantial.
-
-```bash
-git clone https://github.com/Preethesh16/HarvestLink.git
-cd HarvestLink
-make setup
-cp .env.example .env
-make dev
-```
-
-Open **http://127.0.0.1:5173**. The API listens on **http://127.0.0.1:8000**. Both services are intended for your local machine. Use the workspace selector to move between the farmer and three restaurants.
-
-The example configuration selects real local Chronos inference and local rule-based negotiation. The first **Run forecast** action downloads `amazon/chronos-2` if it is not cached. Forecast failures are shown; they do not silently substitute a different model.
-
-For a lighter, explicitly labelled baseline-only setup:
-
-```bash
-uv sync
-cd frontend && npm ci && cd ..
-FORECAST_MODE=baseline uv run python scripts/dev.py
-```
-
-If an existing `.env` is present, preserve it. Environment variables supplied in the shell take precedence. The launcher loads non-empty values from `.env` without printing them.
-
-### Operating modes
-
-| Configuration | Behavior |
+| Question | What the demo demonstrates |
 | --- | --- |
-| `FORECAST_MODE=chronos` | Runs pretrained Chronos-2 in an isolated CPU subprocess; requires forecast dependencies |
-| `FORECAST_MODE=baseline` | Explicit weekday baseline demonstration |
-| `NEGOTIATION_MODE=local` | Deterministic bounded policy agents; no API key needed |
-| `NEGOTIATION_MODE=openai` | Structured OpenAI proposals; requires `OPENAI_API_KEY` |
-| `OPENAI_MODEL` | Model for the optional proposal adapter; example uses `gpt-4.1-mini` |
-| `DATA_GOV_API_KEY` | Enables an attempt to refresh government-reported Karnataka tomato prices |
-| `CHRONOS_PYTHON` | Optional alternate interpreter containing Chronos; otherwise uses the project runtime |
-| `HARVESTLINK_DB` | Local SQLite path; defaults to `var/harvestlink.sqlite3` |
+| Who is it for? | One marginal-farmer scenario and three independent restaurant buyers |
+| Why would a farmer join? | Reach buyers, compare terms, use native-language help, retain sale approval |
+| Why would a restaurant join? | See projected shortages, account for expiry, and purchase against explicit requirements |
+| What is the technical contribution? | Forecast-to-requirement-to-negotiation-to-reservation-to-inventory, with server-enforced constraints |
+| Where does AI help? | Chronos-2 consumption forecasts, optional OpenAI proposals, multilingual assistance and Sarvam speech |
+| What is verified? | 22 backend tests, 13 browser tests, actual Chronos inference, live OpenAI and Sarvam calls |
+| What remains a simulation? | Participants, histories, default market references, collection distances and all payments |
 
-Keep credentials in the server environment or ignored `.env`. No credentials belong in browser code, CSVs, screenshots or Git. OpenAI requests are opt-in, may incur provider charges, use `store: false`, and contain the agent’s own policy plus public trade terms. The app does not transmit personal profile details to that adapter.
+This is a hackathon prototype. It does **not** claim field validation, guaranteed better prices, or production financial infrastructure.
 
-**Verification boundary:** local rule-based negotiation and actual Chronos inference were exercised. After configuration, one live OpenAI negotiation was exercised successfully; the default repository configuration still uses local policy agents. Authenticated government-price calls remain untested without a key. Failure paths are tested. Do not interpret configurable integrations as verified external partnerships.
-
-## Your data, in a simple CSV
-
-Download templates directly from the app or use the [included CSV files](demo-data). Farmer uploads list harvests; restaurant uploads provide inventory batches and daily consumption separately.
-
-```csv
-crop,variety,grade,quantity,unit,ask_price,harvest_date,available_date
-Tomato,Local,A,100,kg,30,2026-10-21,2026-10-21
-```
-
-```csv
-crop,quantity,unit,usable_until
-Tomato,20,kg,2026-10-24
-```
-
-```csv
-date,crop,quantity,waste,stockout
-2026-10-20,Tomato,8.5,0.3,false
-```
-
-These are format examples. Use current dates for your demonstration; `make demo-data` regenerates the sample files. Imports validate all rows before committing. Restaurant replacement is explicit and scoped to the selected workspace; otherwise inventory appends and consumption rejects duplicate crop/date rows. Existing harvests cannot be bulk-replaced because trades may refer to them.
-
-## Market transparency, without false precision
-
-The default price card is **synthetic and labelled**. Government refresh is optional, using the [official daily mandi-price resource](https://www.data.gov.in/resource/current-daily-price-various-commodities-various-markets-mandi).
-
-Reported prices are not guaranteed continuous live quotes. The adapter retains source records and retrieval time. Where source units cannot be established, it shows unverified units rather than converting to a misleading price per kilogram. Compare date, commodity, variety, grade, market and transport terms before interpreting a benchmark. A low offer alone does not prove unfair pricing.
-
-## Architecture
+## Follow one complete trade
 
 ```mermaid
 flowchart LR
-    Farmer[Farmer workspace] --> API[FastAPI: scoped commands]
-    Buyers[Three restaurant workspaces] --> API
-    API <--> DB[(SQLite state and event journal)]
-    API --> Forecast[Chronos-2 or explicit baseline]
-    Forecast --> Inventory[Expiry-aware stock projection]
-    Inventory --> Request[Buyer-approved requirement]
-    Request --> Negotiation[Bounded proposals and counteroffers]
-    Negotiation --> Validate[Server-side policy validation]
-    Validate --> Choice[Farmer selection]
-    Choice --> Confirm[Buyer confirmation and reservation]
-    Confirm --> Order[Simulated fulfillment and settlement]
-    API --> Market[Dated market adapter]
+    A[Restaurant inventory + usage] --> B[Expiry-aware forecast]
+    B --> C[Buyer approves requirement]
+    D[Farmer harvest + private limits] --> E[Bounded agent negotiation]
+    C --> E
+    E --> F[Farmer chooses buyer]
+    F --> G[Buyer confirms + stock reserved]
+    G --> H[Simulated funds locked]
+    H --> I[Pickup + receipt]
+    I --> J[Inventory updated + settlement]
 ```
 
-The frontend pairs forest-green and warm cream surfaces with editorial typography and original SVG produce illustrations. Its panoramic farm includes crop beds, an orchard, greenhouse and collection tractor, built with React, TypeScript, Vite and React Three Fiber. The scene is lazy-loaded, honours reduced-motion preference and has a WebGL fallback. Charts and forms remain usable independently of 3D.
+### 1. A farmer workspace that starts with the harvest
 
-SQLite transactions protect reservations and state transitions. Model inference and external requests happen outside write transactions, with state checks before results are committed. Participant projections hide other buyers’ budgets and inventory; **four password-protected demo accounts use scoped server sessions; these are not production customer identities**.
+![Farmer dashboard](docs/images/farmer-dashboard.png)
 
-## Verification
+List crop, variety, declared grade, kilograms, asking price and dates. Upload a CSV when there is more to enter. Imports validate every row before saving; malformed data does not partially overwrite the workspace.
 
-With the local API and frontend running:
+The farmer and buyer choose their role at login and receive separate interfaces. English and ten Indian languages are available: Hindi, Kannada, Tamil, Telugu, Malayalam, Marathi, Gujarati, Bengali, Punjabi and Odia. Madhu, the honeybee assistant, replies in the selected language and uses **Sarvam Bulbul v3** for speech. Translation catalogs still need native-speaker review.
+
+The original Three.js farm rotates slowly, responds to dragging and keyboard arrows, and respects reduced-motion preferences. The workspaces prioritize ordinary forms and clear actions.
+
+### 2. Kitchen forecasts that lead to a purchase decision
+
+![Restaurant forecast with inventory and purchase planning](docs/images/restaurant-forecast.png)
+
+**Chronos-2 predicts consumption; deterministic inventory logic calculates replenishment.**
+
+The seeded demo provides 90 days of synthetic usage for each restaurant. A seven-day forecast is combined with batch expiry, funded incoming stock, a planning lead time and a replenishment window. Consumption and waste remain separate. Stockout-censored observations are not silently treated as zero demand.
+
+The restaurant reviews the suggestion and approves a requirement. A forecast never silently places an order.
+
+**Measured result, not a performance claim:** on one seeded held-out week, Chronos MAE was **0.598 kg**, compared with **0.469 kg** for a weekday seasonal-naive baseline. The baseline performed better. This comparison remains visible; synthetic data cannot establish operational accuracy. Forecasting currently demonstrates **Tomato**, while listings and inventory support additional crops.
+
+### 3. Three buyers, bounded proposals, one human choice
+
+![Three restaurant offers and inspectable negotiation steps](docs/images/negotiation.png)
+
+Each participant sets private limits. The farmer defines a price floor, minimum order size and radius. Each restaurant defines a price ceiling, quantity, total budget and radius.
+
+The server validates generated proposals against those constraints. Offers expose price, quantity, collection responsibility, illustrative distance and negotiation steps. A buyer’s private budget is not sent to another participant’s agent. The system can return **no acceptable deal**.
+
+The farmer explicitly chooses an offer. The restaurant then confirms. Confirmation rechecks current limits and inventory, and reserves stock atomically. Policy changes invalidate outstanding proposals; expired unfunded reservations release stock.
+
+### 4. A visible agreement and payment lifecycle
+
+![Completed trade timeline](docs/images/order-settled.png)
+
+`Awaiting buyer → Reserved → Funded → Picked up → Received → Settled`
+
+Every transition is an explicit participant action. Receipt adds an inventory batch for the buyer. Tests cover repeated commands, concurrent reservations, cancellation, refunds and expiry behavior.
+
+**All escrow balances and transfers are simulated.** No real money, regulated escrow account, payment gateway or carrier movement is represented as connected.
+
+### 5. Planning beyond today’s sale
+
+![Seasonal crop planning with demand evidence](docs/images/crop-planning.png)
+
+The farmer’s **What to grow next** view combines broad seasonal suitability, water availability, previous crop family and recent aggregate kitchen usage. It shows illustrative harvest timing, demand evidence, no-data states and growing constraints.
+
+Demand ranges are scenarios derived from recent usage—not purchase commitments, confidence intervals or validated seasonal forecasts. Location is captured for context; the prototype does not claim soil testing, hyperlocal climate modeling or agronomist approval. Method assumptions and agricultural references are available inside the view.
+
+## What is real, what is simulated
+
+| Capability | Implementation and boundary |
+| --- | --- |
+| Identity | Server-validated demo accounts, hashed password verification, HttpOnly cookies, role enforcement; no public registration or production identity service |
+| Negotiation | Reproducible local policy engine by default; optional credentialed OpenAI structured proposals; hard server-side validation in both modes |
+| Forecasting | Actual pretrained Chronos-2 inference on CPU; no fine-tuning; explicit baseline/failure status |
+| Voice help | OpenAI text assistance and Sarvam speech when configured; server-side credentials |
+| Mandi reference | Optional data.gov.in adapter; source and reporting date shown; no government key means labelled synthetic reference |
+| Nearby buyers | Seeded collection distances for comparison; **no live GPS, road routing or delivery integration** |
+| Crop planning | Explainable seasonal and demand scenarios, with assumptions and cautions |
+| Escrow | State-machine simulation only; no real funds |
+
+Direct purchasing may improve terms, but removing an intermediary does not remove transport, grading, spoilage or coordination costs. HarvestLink makes these decisions inspectable; it does not guarantee savings.
+
+## Architecture you can inspect
+
+```mermaid
+flowchart TB
+    UI[React 19 + TypeScript\nRole-specific UI / Three.js entrance] --> API[FastAPI\nSession and workspace enforcement]
+    API --> DB[(SQLite\nTransactional state)]
+    API --> RULES[Deterministic constraints\nReservation + order lifecycle]
+    API --> FORECAST[Chronos-2 worker\nExpiry-aware inventory projection]
+    API --> PLAN[Seasonal planner\nUsage evidence + constraints]
+    API -. configured .-> OPENAI[OpenAI\nProposals / assistance / translation]
+    API -. configured .-> SARVAM[Sarvam\nNative-language speech]
+    API -. configured .-> GOV[data.gov.in\nDated mandi reference]
+```
+
+| Code | Responsibility |
+| --- | --- |
+| [`backend/app.py`](backend/app.py) | API, participant commands and atomic persistence |
+| [`backend/identity.py`](backend/identity.py) | Sessions, demo identities and access enforcement |
+| [`backend/domain.py`](backend/domain.py) | Trading domain, seeded data and inventory projection |
+| [`backend/planning.py`](backend/planning.py) | Seasonal crop ranking and transparent demand scenarios |
+| [`backend/assistance.py`](backend/assistance.py) | Language assistance and Sarvam speech |
+| [`frontend/src/App.tsx`](frontend/src/App.tsx) | Farmer and restaurant workflows |
+| [`frontend/src/Welcome.tsx`](frontend/src/Welcome.tsx) | Landing, role selection and onboarding |
+| [`frontend/src/CropPlanner.tsx`](frontend/src/CropPlanner.tsx) | Farmer crop-planning interface |
+| [`backend/tests`](backend/tests) / [`frontend/e2e`](frontend/e2e) | Domain, API and browser verification |
+
+## Run it locally
+
+Requires **Python 3.12–3.13**, **uv**, and **Node.js 20+**. Chronos downloads model weights on first use and needs additional disk space; CPU inference is supported.
+
+```bash
+git clone git@github.com:Preethesh16/HarvestLink.git
+cd HarvestLink
+cp .env.example .env
+make setup
+make dev
+```
+
+Open **http://127.0.0.1:5173**. Select **Farmer** or **Buyer**, sign in, then complete the profile. Repository access is required while the project is private.
+
+| Role | Username | Workspace |
+| --- | --- | --- |
+| Farmer | `farmer` | Ananya Farms |
+| Buyer | `restaurant1` | The Green Table |
+| Buyer | `restaurant2` | Coastal Kitchen |
+| Buyer | `restaurant3` | Roots & Grains |
+
+All four **public demo accounts** use `Harvest@123`. They are sample identities, not credentials suitable for a public production deployment.
+
+### Optional integrations
+
+Edit the ignored server-side `.env`:
+
+```dotenv
+NEGOTIATION_MODE=local
+FORECAST_MODE=chronos
+# Enable live proposals with NEGOTIATION_MODE=openai
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_API_KEY=
+SARVAM_API_KEY=
+DATA_GOV_API_KEY=
+```
+
+Never put provider keys in frontend variables or commit them. OpenAI and Sarvam calls require valid credentials and incur provider usage. No key is needed for local policy negotiation. Government reference refresh must be treated as dated reporting, not a continuous exchange price.
+
+### Bring your own CSV
+
+[Download and understand the sample files →](demo-data/README.md)
+
+- **Harvest:** crop, variety, grade, quantity, unit, asking price, harvest and availability dates.
+- **Inventory:** crop, kilograms and usable-until date for each batch.
+- **Consumption:** date, crop, quantity, waste and stockout flag.
+
+Use the in-app templates for current dates. Inventory imports append batches unless the restaurant explicitly selects replacement. Consumption imports reject duplicate crop/date pairs. Run `make demo-data` to regenerate the supplied synthetic examples relative to today.
+
+## Verification and reproducibility
+
+| Check | Recorded result |
+| --- | --- |
+| Backend suite | **22 passed** |
+| Browser suite | **13 passed** |
+| TypeScript / production build | Passed; Three.js chunk-size advisory remains |
+| Ruff / Python compile | Passed |
+| Independent UI audit | **8.4/10** engineering review; not a farmer field trial |
+| Live services | OpenAI negotiation, Chronos inference and Kannada Sarvam audio exercised |
 
 ```bash
 make test
 cd frontend
-npx playwright install chromium --no-shell
+npx playwright install chromium
 npx playwright test
 ```
 
-The backend suite covers private projections, atomic imports/replacements, invalid agent proposals, price and budget boundaries, no-deal behavior, concurrent selection/reservation, expiry, cancellation, repeated commands and incoming-stock handling. Browser checks exercise the complete trade, restaurant forecasting and CSV validation, and a narrow mobile viewport.
+Browser tests mutate demo data. Use an isolated backend/database and frontend proxy for verification; the executed audit used ports **8001 / 5174** with `HARVESTLINK_DB=var/visual-tests.sqlite3`. See [the verification record](docs/VERIFICATION.md) for coverage and limits. Passing tests demonstrate covered paths, not defect-free software.
 
-[Watch the recorded walkthrough](docs/video/harvestlink-demo.mp4). Screenshots and recording are actual local application captures using synthetic records. They are not concept renders. See [capture provenance](docs/images/README.md) and the [demo script](docs/DEMO.md).
+The [living plan](plan.md) records milestones and fixes. The [demo production notes](docs/DEMO.md) include timestamps, narration provenance and recording instructions.
 
-## What this prototype does not claim
+## Next validation steps
 
-- Production customer registration, verified farmers and production tenant infrastructure.
-- Real-money escrow, production payments, automatic refunds or carrier integrations.
-- Live GPS routing: restaurant distances are seeded, illustrative values.
-- Guaranteed lower buyer prices, higher farmer incomes, calibrated spoilage estimates or real-world forecasting accuracy.
-- A nationwide market-price stream or automatic final purchasing decisions.
+1. Interview farmers and restaurant purchasing staff; measure time to agreement, rejection reasons and repeat use.
+2. Test forecasts on consented real usage data, against simple baselines and explicit waste/stockout costs.
+3. Validate local crop calendars with agricultural experts and add buyer commitments distinct from demand scenarios.
+4. Connect verified grading, real routes and a suitable payment partner before any production trade.
+5. Review regional translations with native speakers and observe first-time users on low-end devices.
 
-The current demo selects one buyer per active lot agreement. Additional stock can be traded after that agreement completes. Multi-winner allocation, actual logistics and production authentication are future work.
+## Design provenance
 
-The build milestones, decisions, fixes and verification history live in [plan.md](plan.md).
+HarvestLink is a fresh implementation. The user’s **Inception** project informed forecasting presentation and supplied the original mascot geometry adapted into Madhu; **Parcelwise** informed the delivery workflow direction. The agricultural scene and produce artwork are original procedural/SVG assets. Demo narration is explicitly AI-generated; the screen recording shows the working prototype with synthetic participants.
 
-## A welcome in your language
+<div align="center">
 
-Start at the animated agricultural landing page, then sign in to one participant's workspace. First login asks for a farm/restaurant name and location. The farmer workspace focuses on selling; the blue restaurant workspace focuses on inventory and purchasing.
+**A farmer’s harvest deserves a clear path to a buyer—and a decision that stays theirs.**
 
-| Demo account | Username | Password |
-| --- | --- | --- |
-| Farmer | `farmer` | `Harvest@123` |
-| The Green Table | `restaurant1` | `Harvest@123` |
-| Coastal Kitchen | `restaurant2` | `Harvest@123` |
-| Roots & Grains | `restaurant3` | `Harvest@123` |
-
-These are public, separate hackathon accounts with server-validated sessions. Sign out before changing participant. They are not production customer credentials.
-
-Choose English or ten Indian languages from the language menu. **Madhu**, the farmer's honeybee guide adapted from Inception, answers app questions in the selected language. Tap **Listen in my language** for Sarvam speech. Standard interface translations are bundled, and dynamic messages are translated on demand; service failures are shown explicitly. Native-speaker review is still needed before real-world rollout.
-
-Set `SARVAM_API_KEY` only in the ignored root `.env` for voice; the existing `OPENAI_API_KEY` powers answers and dynamic translation. Keys never enter the browser bundle. Speech is requested only when the user taps Listen. The assistant explains actions but never accepts an offer or moves money.
-
-![Animated agricultural entrance](docs/images/landing.png)
-![Simple account sign-in](docs/images/sign-in.png)
-![Madhu farmer guide](docs/images/farmer-assistant.png)
-
-## What to grow next
-
-Farmers can open **What to grow next**, enter a location, planned planting date, water availability and previous crop, and get an explained seasonal shortlist. Cards show a planning harvest date, rotation cautions and aggregate demand evidence from demo kitchens. Unknown demand stays unknown. The demand range is a repeat-usage scenario, not a confirmed order, probability interval or yield/profit promise. Crop timing and broad season categories are explicit demo assumptions; confirm local suitability with an agricultural officer.
-
-Sign-in now starts with **I’m a farmer** or **I’m a buyer**. Selecting a role never grants access to another account. Drag the landing-page farm to rotate it; keyboard users can focus it and use arrows or Home. Idle motion stops under the reduced-motion preference.
+</div>

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-21",
+  "environment": "Isolated local prototype, synthetic data",
+  "negotiation_mode": {
+    "negotiation": "openai",
+    "forecast": "chronos",
+    "payments": "simulation",
+    "identity": "four session-scoped demo accounts \u2014 not production identity verification"
+  },
+  "offers": [
+    {
+      "buyer": "Coastal Kitchen",
+      "mode": "openai",
+      "quantity_kg": 35,
+      "price_inr_per_kg": 26.0
+    },
+    {
+      "buyer": "Roots & Grains",
+      "mode": "openai",
+      "quantity_kg": 25,
+      "price_inr_per_kg": 26.0
+    },
+    {
+      "buyer": "The Green Table",
+      "mode": "openai",
+      "quantity_kg": 11.0,
+      "price_inr_per_kg": 28.9
+    }
+  ],
+  "order_statuses": [
+    "settled"
+  ],
+  "money": "Simulated only",
+  "narration_transcript_match": "12 of 12 chapters matched scripted text after punctuation normalization"
+}

@@ -1,0 +1,74 @@
+[
+  {
+    "id": "01-intro",
+    "seconds": 18,
+    "title": "HarvestLink · A better harvest. A better deal.",
+    "text": "A farmer has fresh produce ready. Nearby restaurants need reliable ingredients, but finding the right buyer, agreeing a price, and planning stock are disconnected. HarvestLink addresses direct market access for marginal farmers, connecting one grower with three restaurant buyers, while keeping people in control."
+  },
+  {
+    "id": "02-onboarding",
+    "seconds": 18,
+    "title": "01 / FARMER · Simple, separate onboarding",
+    "text": "Start by choosing farmer or buyer. Each account opens its own workspace. Here, Ananya Farms signs in and completes a simple name and location profile. The farmer sees harvests, offers and orders, while restaurants get a separate purchasing and inventory workspace."
+  },
+  {
+    "id": "03-harvest",
+    "seconds": 20,
+    "title": "List once · Add a harvest or upload CSV",
+    "text": "List produce individually or upload a harvest CSV: crop, variety, grade, kilograms, price and availability dates. Every row is validated before saving. Market references display their source and reporting date. Here, the price is clearly labelled synthetic, not a live mandi feed."
+  },
+  {
+    "id": "04-rules",
+    "seconds": 18,
+    "title": "Your agent. Your boundaries.",
+    "text": "The farmer sets a private minimum price, minimum order size and service radius. Restaurants have their own price, quantity and budget limits. Agents can propose terms inside those boundaries. They cannot authorize a sale. The farmer still compares the offers and chooses the buyer."
+  },
+  {
+    "id": "05-language",
+    "seconds": 22,
+    "title": "Local-language help · Meet Madhu",
+    "text": "HarvestLink supports English and ten Indian languages. Here is the Kannada workspace. Madhu, the honeybee assistant, answers in the selected language, with Sarvam speech. It guides the farmer while leaving decisions in their hands."
+  },
+  {
+    "id": "06-planning",
+    "seconds": 20,
+    "title": "What to grow next · Explainable planning",
+    "text": "What should the farmer grow next? Explore planting date, water availability, previous crops and recent restaurant usage. Suggestions show seasonal suitability, illustrative harvest windows and demand scenarios. Water and rotation cautions remain visible. These are planning aids, not guaranteed orders or locally validated growing advice."
+  },
+  {
+    "id": "07-buyer",
+    "seconds": 24,
+    "title": "02 / RESTAURANT · Purchase before a shortage",
+    "text": "Now, the restaurant side. The Green Table tracks ingredient batches, expiry dates and consumption history, with CSV imports for both inventory and usage. Amazon Chronos Two forecasts consumption. Inventory logic then accounts for expiring batches and funded incoming orders to suggest replenishment. The chart also compares a simple baseline. On this synthetic example, that baseline performed better."
+  },
+  {
+    "id": "08-request",
+    "seconds": 20,
+    "title": "A forecast becomes an approved requirement",
+    "text": "The buyer reviews the recommended quantity and approves a purchase requirement. In agent settings, the restaurant controls its maximum unit price, total budget and service radius. Marketplace listings connect that need to available harvests. A forecast is advice; it does not silently spend the restaurant's money."
+  },
+  {
+    "id": "09-negotiation",
+    "seconds": 20,
+    "title": "Three buyers · One farmer’s choice",
+    "text": "Three restaurant agents negotiate against the farmer’s limits. Compare quantities, prices and negotiation steps. Collection distances help compare nearby buyers, but are illustrative; road routing is not connected. The farmer chooses The Green Table. Selection still requires the buyer’s agreement."
+  },
+  {
+    "id": "10-escrow",
+    "seconds": 18,
+    "title": "Mutual agreement → reservation → simulated escrow",
+    "text": "The selected restaurant reviews and confirms the agreement. Only then is stock reserved. Funding locks the amount in this simulated escrow workflow. The order visibly separates confirmation from funding, so an unconfirmed proposal cannot be mistaken for a paid order. No real money moves in this demo."
+  },
+  {
+    "id": "11-completion",
+    "seconds": 20,
+    "title": "Pickup. Receipt. Settlement.",
+    "text": "The farmer records pickup. The restaurant confirms receipt, which adds the delivered produce to its inventory. Finally, the farmer releases the simulated funds. Each step is visible in the order timeline. Explicit participant actions and inventory checks keep the trade inspectable, from the first offer through completed delivery."
+  },
+  {
+    "id": "12-close",
+    "seconds": 12,
+    "title": "Better-informed trade. Human decisions.",
+    "text": "HarvestLink connects crop planning, kitchen forecasting and bounded negotiation. Thirty-five automated tests cover the prototype. Next comes validation with actual farmers and kitchens."
+  }
+]
