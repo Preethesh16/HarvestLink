@@ -403,12 +403,73 @@ def expire_orders(s):
     return changed
 
 
+def current_demand(s):
+    """Public buying interest, excluding quantities already covered by agreements."""
+    crops = {}
+    lots = {lot["id"]: lot for lot in s["lots"]}
+    for lot in lots.values():
+        key = lot["crop"].strip().casefold()
+        row = crops.setdefault(
+            key,
+            {
+                "crop": lot["crop"],
+                "requested_kg": 0,
+                "available_kg": 0,
+                "buyers": set(),
+                "lot_ids": [],
+            },
+        )
+        available = max(0, lot["quantity"] - lot["reserved"] - lot["sold"])
+        if lot["available_date"] <= date.today().isoformat():
+            row["available_kg"] += available
+    for req in s["requirements"]:
+        lot = lots.get(req["lot_id"])
+        if not lot or not req.get("approved"):
+            continue
+        if req.get("expires_at") and req["expires_at"] < now():
+            continue
+        covered = sum(
+            o["quantity"]
+            for o in s["orders"]
+            if o["lot_id"] == req["lot_id"]
+            and o["buyer"] == req["actor"]
+            and o["status"]
+            in ("awaiting_buyer", "reserved", "funded", "picked_up", "received", "settled")
+            and not (
+                o["status"] in ("awaiting_buyer", "reserved") and o.get("expires_at", now()) < now()
+            )
+        )
+        remaining = max(0, req["quantity"] - covered)
+        if not remaining:
+            continue
+        row = crops[lot["crop"].strip().casefold()]
+        row["requested_kg"] += remaining
+        row["buyers"].add(req["actor"])
+        if (
+            lot["available_date"] <= date.today().isoformat()
+            and lot["quantity"] - lot["reserved"] - lot["sold"] > 0
+            and lot["id"] not in row["lot_ids"]
+        ):
+            row["lot_ids"].append(lot["id"])
+    records = []
+    for row in crops.values():
+        row["buyer_count"] = len(row.pop("buyers"))
+        row["requested_kg"] = round(row["requested_kg"], 2)
+        row["available_kg"] = round(row["available_kg"], 2)
+        records.append(row)
+    return {
+        "as_of": now(),
+        "records": sorted(records, key=lambda r: (-r["requested_kg"], r["crop"])),
+    }
+
+
 def public_state(s, actor, mode):
     result = copy.deepcopy(s)
     result["policy"] = result.pop("policies")[actor]
     result["actor"] = actor
     result["mode"] = mode
     if actor == "farmer":
+        result["current_demand"] = current_demand(s)
         result["inventory"] = []
         result["history"] = []
         result["forecasts"] = {}

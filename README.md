@@ -244,3 +244,7 @@ HarvestLink is a fresh implementation. The user’s **Inception** project inform
 **A farmer’s harvest deserves a clear path to a buyer—and a decision that stays theirs.**
 
 </div>
+
+### Demand now for farmers
+
+The farmer overview and **Demand now** page rank crops by outstanding approved buyer requests, showing requested kilograms, distinct interested buyers and available harvest. Agreement quantities are excluded; cancelled or expired agreements restore interest. Farmers can open negotiations from a matching harvest. These are demo participants’ platform requests—not national market demand, forecasts or guaranteed sales. Buyer budgets stay private, and the section is absent from buyer workspaces. Refresh demand to recheck current workspace activity.

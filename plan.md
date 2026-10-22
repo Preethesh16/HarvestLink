@@ -312,3 +312,11 @@ Change log:
 - All 55 backend tests and the new mocked UI failure/success regression pass. Real external attempts failed: direct Agmarknet HTTP403, automated report controls unavailable, and tested NHB reports empty. A successful real refresh remains blocked pending upstream access or DATA_GOV_API_KEY; the app preserves its genuine dated bootstrap report.
 
 - Production build and three relevant browser regressions pass. Publishing the refresh implementation with M3 left open specifically for successful external connectivity; no automatic-fetch success is claimed.
+
+## Farmer demand now
+- [x] D1 — Aggregate approved platform requests by crop, subtract quantities covered by agreements, keep private buyer policies hidden.
+- [x] D2 — Add farmer-only Demand now navigation and overview cards with requested kg, buyer counts, available harvest and negotiation entry.
+- [x] D3 — Verify request aggregation, role separation and UI; document and publish.
+- Current demand uses demo buyer requests, not national demand or forecast estimates; no-demand crops remain visible and future harvest is not counted as available today.
+
+- Verified 58 backend tests, production build and farmer-to-buyer browser role check. Browser reset clears sessions, so the isolated test signs in again after reset. Live workspace data preserved; API restarted to serve demand aggregation.

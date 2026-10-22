@@ -28,6 +28,7 @@ import {
 import { useLocale } from "./Locale";
 import Assistant from "./Assistant";
 import CropPlanner from "./CropPlanner";
+import DemandNow from "./DemandNow";
 import MarketPrices from "./MarketPrices";
 import DeliveryMap from "./DeliveryMap";
 import { NegotiationReplay, AgreementScene } from "./TradeJourney";
@@ -40,6 +41,7 @@ type State = {
   inventory: Row[];
   history: Row[];
   forecasts: Row[] | Row;
+  current_demand?: { as_of: string; records: any[] };
   requirements: Row[];
   offers: Row[];
   orders: Row[];
@@ -313,6 +315,7 @@ export default function App({ initialActor }: { initialActor: string }) {
     ? [
         "Overview",
         "My harvest",
+        "Demand now",
         "What to grow next",
         "Mandi prices",
         "Negotiations",
@@ -330,6 +333,7 @@ export default function App({ initialActor }: { initialActor: string }) {
   const icons: Record<string, typeof Sprout> = {
     Overview: LayoutDashboard,
     "My harvest": Sprout,
+    "Demand now": BarChart3,
     "What to grow next": Sprout,
     "Mandi prices": BarChart3,
     "Inventory & forecast": Package,
@@ -1199,6 +1203,17 @@ export default function App({ initialActor }: { initialActor: string }) {
             </div>
           ) : (
             <>
+              {farmer && (page === "Demand now" || page === "Overview") && (
+                <DemandNow
+                  data={state.current_demand}
+                  busy={busy}
+                  refresh={() => load()}
+                  onExplore={(id) => {
+                    setNegotiationLot(id);
+                    setPage("Negotiations");
+                  }}
+                />
+              )}
               {farmer && page === "Mandi prices" && (
                 <MarketPrices
                   crops={[...new Set(lots.map((l) => String(l.crop)))]}

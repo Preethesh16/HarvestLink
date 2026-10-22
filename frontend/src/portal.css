@@ -761,3 +761,13 @@
 .government-table .badge {
   margin-left: 12px;
 }
+
+.demand-now { padding: 26px; margin-bottom: 24px; border: 1px solid #dce4d3; background: #f6f8ef; border-radius: 22px; }
+.demand-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.demand-heading h2 { margin: 10px 0; font-size: 27px; }
+.demand-now p, .demand-now small { color: #536352; line-height: 1.6; }
+.demand-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,240px),1fr)); gap: 16px; margin: 20px 0; }
+.demand-card { background: #fff; border: 1px solid #e0e7d7; border-radius: 16px; padding: 20px; }
+.demand-card h3 { font-size: 22px; margin: 12px 0; }
+.demand-quantity { font-size: 30px; color: #244631; }
+.demand-quantity small { font-size: 14px; font-weight: 400; }
