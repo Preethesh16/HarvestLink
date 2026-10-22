@@ -66,3 +66,7 @@ The revised 13-chapter video is exactly 230.000 seconds for both audio and video
 ## Automatic market refresh
 
 55 backend tests pass, including 10 new market-cache/parser cases. A browser regression passes for saved-price retention on refresh failure and updating source/date/price after a mocked successful retry. The official external fetch is not verified successful: direct Agmarknet requests returned403 and the automated public report failed to load. No data.gov.in API key is configured. This is an explicit connectivity limitation, not a passing live-feed test. See [market data setup](MARKET-DATA.md).
+
+## Hosted deployment — 22 October 2026
+
+Vercel production build passed. All 61 backend tests passed with isolated PostgreSQL integration checks, including concurrent initial schema creation, transaction rollback and durable session revocation. Hosted Playwright farmer/buyer navigation passed. Live API smoke test passed login, role protection, baseline forecast, model negotiation, mutual confirmation, simulated escrow funding, pickup, receipt, settlement, Excel download, saved government report and logout revocation. Cloud forecast is explicitly baseline; Chronos remains local.

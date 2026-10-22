@@ -17,3 +17,8 @@ playwright-report/
 .vercel/
 .vercel
 .env*
+
+# Vercel marketplace-generated local agent setup
+.agents/
+skills-lock.json
+!.env.example

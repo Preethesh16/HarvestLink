@@ -16,6 +16,13 @@ def connect():
 
 
 def initialize(db):
+    ready = db.execute(
+        "SELECT to_regclass('harvest_state'), to_regclass('harvest_sessions')"
+    ).fetchone()
+    if all(ready):
+        return
+    # Serialize first-ever DDL across concurrent serverless cold starts.
+    db.execute("SELECT pg_advisory_xact_lock(17290381)")
     db.execute(
         "CREATE TABLE IF NOT EXISTS harvest_state (id INTEGER PRIMARY KEY, revision INTEGER NOT NULL, body TEXT NOT NULL)"
     )

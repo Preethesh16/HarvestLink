@@ -11,3 +11,6 @@ frontend/playwright-report
 **/__pycache__
 .pytest_cache
 .ruff_cache
+
+.agents
+skills-lock.json

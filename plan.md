@@ -324,7 +324,9 @@ Change log:
 ## Vercel deployment
 - [x] V2 — Authenticate Vercel account (existing token expired; device authorization requested).
 - [x] V3 — Prepare frontend/API deployment with shared persistent state and revocable sessions.
-- [ ] V4 — Configure cloud database and server-only provider keys; deploy and verify public farmer/buyer workflows.
+- [x] V4 — Configure cloud database and server-only provider keys; deploy and verify public farmer/buyer workflows.
 - Vercel preparation: local SQLite and process-local sessions cannot provide durable shared state across serverless instances. Keep local behavior while adding PostgreSQL support for cloud deployment. Chronos requires a separate model runtime; deployment must explicitly use baseline forecasting until one is connected.
 
 - Vercel project `preethesh16s-projects/harvestlink` created and GitHub connected. Provider secrets configured server-side. Vercel production build, 60 backend tests (including real isolated PostgreSQL persistence/session tests) and lint pass. Neon free-plan creation awaits required user terms acceptance; no working public deployment claimed.
+
+- Neon free database connected after user accepted terms. Production URL: https://harvestlink-jade.vercel.app. Hosted farmer/buyer browser navigation, private-role protection, baseline forecast, live model negotiation, complete simulated trade, Excel template, dated market report and logout revocation verified. Moved API to Singapore alongside Neon. Fixed concurrent first-schema initialization found in live logs; added six-worker PostgreSQL bootstrap regression.

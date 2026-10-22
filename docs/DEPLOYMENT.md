@@ -1,5 +1,9 @@
 # Vercel deployment
 
+Live demo: https://harvestlink-jade.vercel.app
+
+Hosted on Vercel with Neon free PostgreSQL in Singapore. Public demo accounts are `farmer`, `restaurant1`, `restaurant2`, `restaurant3`, all using `Harvest@123`.
+
 Deploy the repository root. `vercel.json` builds the Vite frontend and routes `/api/*` to the FastAPI ASGI function in `api/index.py`.
 
 ## Required configuration

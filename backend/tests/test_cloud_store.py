@@ -46,3 +46,13 @@ def test_session_survives_process_memory_clear_and_logout_revokes(cloud):
     client.post("/api/auth/logout")
     assert cloud_store.get_session(token) is None
     assert client.get("/api/state").status_code == 401
+
+
+def test_concurrent_first_bootstrap(cloud):
+    from concurrent.futures import ThreadPoolExecutor
+
+    with cloud_store.connect() as db:
+        db.execute("DROP TABLE harvest_state, harvest_sessions")
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        results = list(pool.map(lambda _: cloud_store.read(initial_state), range(6)))
+    assert all(revision == 0 and state["lots"] for revision, state in results)

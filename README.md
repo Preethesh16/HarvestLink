@@ -12,7 +12,7 @@
 ![Tests](https://img.shields.io/badge/Verified-60_tests-6a8051?style=flat-square)
 ![Prototype](https://img.shields.io/badge/Escrow-simulated-c39142?style=flat-square)
 
-[**Watch the 3:50 demo →**](docs/video/harvestlink-demo.mp4) · [Run it locally](#run-it-locally) · [Verification](docs/VERIFICATION.md) · [Upload samples](demo-data/README.md)
+[**Open the live demo →**](https://harvestlink-jade.vercel.app) · [**Watch the 3:50 demo →**](docs/video/harvestlink-demo.mp4) · [Run it locally](#run-it-locally) · [Verification](docs/VERIFICATION.md) · [Upload samples](demo-data/README.md)
 
 </div>
 
