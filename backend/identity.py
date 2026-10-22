@@ -8,6 +8,8 @@ import time
 from fastapi import Request
 from fastapi.responses import JSONResponse
 
+from backend import cloud_store
+
 ACCOUNTS = {"farmer": "farmer", "restaurant1": "r1", "restaurant2": "r2", "restaurant3": "r3"}
 # Public hackathon credentials, deliberately not represented as production accounts.
 PASSWORD_HASH = hashlib.scrypt(b"Harvest@123", salt=b"harvestlink-demo-v1", n=16384, r=8, p=1)
@@ -29,17 +31,30 @@ def authenticate(username, password, host):
         return None
     ATTEMPTS[host] = []
     token = secrets.token_urlsafe(32)
-    SESSIONS[token] = (ACCOUNTS[username], time.time() + 43200)
+    expires = time.time() + 43200
+    if cloud_store.enabled():
+        cloud_store.save_session(token, ACCOUNTS[username], expires)
+    else:
+        SESSIONS[token] = (ACCOUNTS[username], expires)
     return token
 
 
 def session(request: Request):
     token = request.cookies.get("harvest_session", "")
-    identity = SESSIONS.get(token)
+    if not token:
+        return None
+    identity = cloud_store.get_session(token) if cloud_store.enabled() else SESSIONS.get(token)
     if identity and identity[1] > time.time():
         return identity[0]
-    SESSIONS.pop(token, None)
+    revoke(token)
     return None
+
+
+def revoke(token):
+    if cloud_store.enabled():
+        cloud_store.revoke_session(token)
+    else:
+        SESSIONS.pop(token, None)
 
 
 async def protect(request: Request, call_next):

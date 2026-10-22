@@ -11,7 +11,7 @@ from fastapi import FastAPI, Header, HTTPException, Request, Response
 from fastapi.responses import PlainTextResponse
 from pydantic import BaseModel, ConfigDict
 
-from backend import assistance, identity
+from backend import assistance, cloud_store, identity
 from backend.domain import (
     add_lot,
     baseline_forecast,
@@ -28,7 +28,12 @@ from backend.domain import (
 from backend.services import forecast, market_quotes, modes, propose_price
 
 app = FastAPI(title="HarvestLink", version="0.1.0")
-DB = Path(os.getenv("HARVESTLINK_DB", "var/harvestlink.sqlite3"))
+DB = Path(
+    os.getenv(
+        "HARVESTLINK_DB",
+        "/tmp/harvestlink.sqlite3" if os.getenv("VERCEL") else "var/harvestlink.sqlite3",
+    )
+)
 
 
 class Payload(BaseModel):
@@ -39,6 +44,22 @@ def actor_id(x_actor: Annotated[str, Header()] = "farmer"):
     if x_actor not in ("farmer", "r1", "r2", "r3"):
         raise HTTPException(403, "Unknown demo workspace")
     return x_actor
+
+
+def initial_state():
+    s = seed()
+    for actor in ("r1", "r2", "r3"):
+        s["forecasts"][actor] = baseline_forecast(s, actor)
+        s["requirements"].append(
+            {
+                "id": uid("req"),
+                "actor": actor,
+                "lot_id": "lot_tomato",
+                "quantity": s["policies"][actor]["quantity"],
+                "approved": True,
+            }
+        )
+    return s
 
 
 def ensure_db():
@@ -65,6 +86,11 @@ def ensure_db():
 
 @contextmanager
 def transaction():
+    if cloud_store.enabled():
+        with cloud_store.transaction(initial_state) as s:
+            expire_orders(s)
+            yield s
+        return
     ensure_db()
     db = sqlite3.connect(DB, timeout=10)
     try:
@@ -86,6 +112,8 @@ def transaction():
 
 
 def read():
+    if cloud_store.enabled():
+        return cloud_store.read(initial_state)
     ensure_db()
     with sqlite3.connect(DB) as db:
         revision, body = db.execute("SELECT revision,body FROM state WHERE id=1").fetchone()
@@ -580,7 +608,7 @@ def login(payload: Payload, request: Request, response: Response):
     role = data.get("role")
     actual_role = "farmer" if identity.ACCOUNTS[username] == "farmer" else "buyer"
     if role is not None and role != actual_role:
-        identity.SESSIONS.pop(token, None)
+        identity.revoke(token)
         raise HTTPException(
             403, "This account belongs to a different role. Choose farmer or buyer correctly."
         )
@@ -609,7 +637,7 @@ def current_session(request: Request):
 
 @app.post("/api/auth/logout")
 def logout(request: Request, response: Response):
-    identity.SESSIONS.pop(request.cookies.get("harvest_session", ""), None)
+    identity.revoke(request.cookies.get("harvest_session", ""))
     response.delete_cookie("harvest_session")
     return {"ok": True}
 

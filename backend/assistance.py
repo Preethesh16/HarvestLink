@@ -20,7 +20,7 @@ LANGUAGES = {
     "pa-IN": "Punjabi",
     "od-IN": "Odia",
 }
-CACHE = Path("var/translations.json")
+CACHE = Path("/tmp/harvestlink-translations.json" if os.getenv("VERCEL") else "var/translations.json")
 LOCK = Lock()
 
 
