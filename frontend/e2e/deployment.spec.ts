@@ -26,5 +26,8 @@ test("Hosted farmer and buyer workspace navigation", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: "Marketplace", exact: true }),
   ).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Run forecast", exact: true }),
+  ).toBeVisible({ timeout: 30000 });
   await page.screenshot({ path: "../var/hosted-buyer.png", fullPage: true });
 });
